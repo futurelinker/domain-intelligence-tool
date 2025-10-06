@@ -1,0 +1,16 @@
+{
+  "name": "domain-intelligence-tool",
+  "version": "1.0.0",
+  "description": "Automated Domain WHOIS, DNS, and SSL lookup tool",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": ["domain", "whois", "dns", "ssl"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
