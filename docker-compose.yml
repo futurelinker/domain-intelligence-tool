@@ -1,0 +1,16 @@
+services:
+  domain-tool:
+    build: .
+    container_name: domain-intelligence-tool
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
