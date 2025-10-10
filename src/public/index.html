@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,89 +12,99 @@
                     colors: {
                         primary: '#667eea',
                         secondary: '#764ba2',
-                    },
-                },
-            },
+                    }
+                }
+            }
         }
     </script>
 </head>
-
 <body class="bg-gradient-to-br from-primary to-secondary min-h-screen p-5">
     <div class="max-w-4xl mx-auto">
-        <!-- Header Section -->
+        <!-- Header -->
         <header class="text-center text-white mb-10 py-8">
             <h1 class="text-5xl font-bold mb-3 drop-shadow-lg">
                 🔍 Domain Intelligence Tool
             </h1>
             <p class="text-xl opacity-90">
-                Stage 1B: Hello World Deployment
+                WHOIS Lookup & Domain Analysis
             </p>
         </header>
 
         <!-- Main Content -->
         <main class="bg-white rounded-3xl p-10 shadow-2xl">
-
-            <!-- Welcome Card -->
-            <div class="bg-gradient-to-br from-green-300 to-blue-300 p-6 rounded-xl mb-8 text-gray-900">
-                <h2 class="text-3xl font-bold mb-4">
-                    ✅ Deployment Successful!
+            
+            <!-- Domain Input Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">
+                    Enter Domain Name
                 </h2>
-                <p class="text-lg mb-5">
-                    Your containerized Node.js application is running on:
-                </p>
-                <div class="bg-white p-5 rounded-lg shadow-md">
-                    <p class="my-2 text-lg">
-                        <strong class="font-semibold">Domain:</strong> domain-check.futurelink.space
-                    </p>
-                    <p class="my-2 text-lg">
-                        <strong class="font-semibold">VPS:</strong> 193.203.167.110
-                    </p>
-                    <p class="my-2 text-lg">
-                        <strong class="font-semibold">Platform:</strong> Docker + Nginx
-                    </p>
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        id="domainInput"
+                        placeholder="example.com"
+                        class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary text-lg"
+                    />
+                    <button 
+                        id="lookupBtn"
+                        class="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-8 rounded-lg text-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 cursor-pointer"
+                    >
+                        Lookup
+                    </button>
                 </div>
-            </div>
-
-            <!-- Status Card -->
-            <div class="bg-gray-50 p-6 rounded-xl mb-8">
-                <h3 class="text-2xl font-bold mb-4 text-gray-800">
-                    🎯 Stage 1A Completed
-                </h3>
-                <ul class="space-y-3">
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ Ubuntu 24.04 LTS configured
-                    </li>
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ Docker & Docker Compose installed
-                    </li>
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ Nginx reverse proxy running
-                    </li>
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ UFW firewall secured
-                    </li>
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ Git & GitHub connected
-                    </li>
-                    <li class="py-2.5 text-lg border-b border-gray-200 last:border-b-0">
-                        ✅ DNS configured
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Next Steps Card -->
-            <div class="bg-gray-50 p-6 rounded-xl">
-                <h3 class="text-2xl font-bold mb-2 text-gray-800">
-                    📋 Next: Stage 2
-                </h3>
-                <p class="text-lg mb-5 text-gray-700">
-                    WHOIS Lookup Implementation
+                <p class="text-sm text-gray-600 mt-2">
+                    Enter a domain name (e.g., google.com, github.com)
                 </p>
-                <button id="testApi"
-                    class="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 cursor-pointer">
-                    Test API Connection
-                </button>
-                <div id="apiResult" class="hidden mt-5 p-4 rounded-lg bg-green-50">
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="hidden text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <p class="mt-4 text-gray-600">Looking up WHOIS information...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+                <p class="text-red-700 font-semibold">Error:</p>
+                <p id="errorMessage" class="text-red-600"></p>
+            </div>
+
+            <!-- WHOIS Results -->
+            <div id="results" class="hidden">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-2">
+                    WHOIS Information
+                </h3>
+
+                <!-- Domain Info Grid -->
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Domain</p>
+                        <p id="domainName" class="text-lg font-semibold text-gray-900"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Registrar</p>
+                        <p id="registrar" class="text-lg font-semibold text-gray-900"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Created Date</p>
+                        <p id="createdDate" class="text-lg font-semibold text-gray-900"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Expires Date</p>
+                        <p id="expiresDate" class="text-lg font-semibold text-gray-900"></p>
+                    </div>
+                </div>
+
+                <!-- Status Section -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <p class="text-sm text-gray-600 mb-2">Domain Status</p>
+                    <div id="statusList" class="space-y-1"></div>
+                </div>
+
+                <!-- Name Servers Section -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-2">Name Servers</p>
+                    <div id="nameServers" class="space-y-1"></div>
                 </div>
             </div>
 
@@ -104,11 +113,10 @@
         <!-- Footer -->
         <footer class="text-center text-white mt-10 py-5 opacity-90">
             <p class="mb-2">Built with Node.js + Express + Docker</p>
-            <p class="text-sm">Version 1.0.0</p>
+            <p class="text-sm">Version 2.0.0 - Stage 2: WHOIS Lookup</p>
         </footer>
     </div>
 
     <script src="app.js"></script>
 </body>
-
 </html>

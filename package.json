@@ -3,14 +3,21 @@
   "version": "1.0.0",
   "description": "Automated Domain WHOIS, DNS, and SSL lookup tool",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js"
   },
-  "keywords": ["domain", "whois", "dns", "ssl"],
-  "author": "Your Name",
+  "keywords": [
+    "domain",
+    "whois",
+    "dns",
+    "ssl"
+  ],
+  "author": "FutureLink",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "whoiser": "^2.0.0-beta.8"
   }
 }
