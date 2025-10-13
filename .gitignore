@@ -1,23 +1,67 @@
 # Node.js
 node_modules/
 npm-debug.log
+npm-debug.log.*
+yarn-debug.log
+yarn-debug.log.*
+yarn-error.log
+yarn-error.log.*
+
+# Package lock files (optional - some keep these)
 package-lock.json
 
-# Enviroment variables
+# Environment variables
 .env
 .env.local
+.env.*.local
+.env.development
+.env.production
 
 # Docker
 docker-compose.override.yml
 
-#IDE
+# IDE / Editor
 .vscode/
-.idea
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
 
 # Logs
 logs/
 *.log
 
-#OS
-.DS_store
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
+
+# Build / Distribution
+dist/
+build/
+out/
+
+# Testing
+coverage/
+.nyc_output/
+*.test.js.snap
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
