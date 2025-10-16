@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- DNS Propagation Checker (Stage 4)
 - SSL Certificate Analysis (Stage 5)
 - Hosting Provider Detection (Stage 6)
 - CMS/Technology Detection (Stage 7)
@@ -18,7 +17,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.1.0] - 2025-01-11
+## [2.2.0] - 2025-01-16
+
+### Added
+- **DNS Propagation Checker** (Stage 4)
+  - Check DNS propagation across 11 global DNS servers
+  - Query major providers: Google, Cloudflare, Quad9, OpenDNS, AdGuard, DNS.WATCH, Verisign, Level3
+  - Real-time propagation status with visual indicators
+  - Percentage-based propagation metrics
+  - IP address consistency checking across servers
+  - Geographic distribution (USA, Europe, Global servers)
+- **Backend Module**
+  - `src/propagation.js` module with custom DNS resolvers
+  - Parallel DNS queries across all servers (1-2 seconds)
+  - `/api/propagation` API endpoint
+  - Smart propagation analysis algorithm
+  - 5-second timeout per server query
+  - Comprehensive error handling for timeouts and failures
+- **Frontend Features**
+  - Beautiful gradient summary box with key metrics
+  - Status indicators with emojis (✅ Propagated, ⏳ Propagating)
+  - Propagation percentage display
+  - Server response count (e.g., 10/11 servers)
+  - IP address summary showing unique IPs and server counts
+  - Color-coded server cards (green = success, yellow = no data, red = error)
+  - 2-3 column responsive grid for server results
+  - Visual consistency with WHOIS and DNS sections
+- **Performance Optimization**
+  - All 3 APIs (WHOIS, DNS, Propagation) called in parallel
+  - Total lookup time: 2-5 seconds for complete analysis
+  - Promise.allSettled for resilient parallel queries
+
+### Changed
+- Updated Full Lookup to include propagation check
+- Enhanced loading states and error handling
+- Improved mobile responsiveness for all sections
+
+### Technical
+- Using Node.js built-in DNS `Resolver` class
+- Custom DNS resolver per server for accurate results
+- No external dependencies required
+
+---
+
+## [2.1.0] - 2025-01-15
 
 ### Added
 - **DNS Records Query** (Stage 3)

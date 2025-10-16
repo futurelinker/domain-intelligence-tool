@@ -2,7 +2,9 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { lookupDomain } from './whois.js';
-import { queryAllRecords } from './dns.js'; 
+import { queryAllRecords } from './dns.js';
+import { checkPropagation } from './propagation.js';
+
 
 
 // Get __dirname equivalent in ES modules
@@ -90,6 +92,41 @@ app.post('/api/dns', async (req, res) => {
 
   } catch (error) {
     console.error('DNS API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// DNS propagation check endpoint
+app.post('/api/propagation', async (req, res) => {
+  try {
+    const { domain } = req.body;
+    
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+    
+    console.log(`📥 Propagation check request for: ${domain}`);
+
+    // Perform propagation check
+    const propagationData = await checkPropagation(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: propagationData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Propagation API error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

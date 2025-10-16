@@ -6,6 +6,7 @@ const error = document.getElementById('error');
 const errorMessage = document.getElementById('errorMessage');
 const results = document.getElementById('results');
 const dnsResults = document.getElementById('dnsResults');
+const propagationResults = document.getElementById('propagationResults');
 
 // Lookup button click handler
 lookupBtn.addEventListener('click', async () => {
@@ -45,7 +46,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Perform full lookup (WHOIS + DNS)
+// Perform full lookup (WHOIS + DNS + Propagation)
 async function performFullLookup(domain) {
   // Hide previous results/errors
   hideAll();
@@ -56,8 +57,8 @@ async function performFullLookup(domain) {
   lookupBtn.textContent = 'Looking up...';
 
   try {
-    // Call both APIs in parallel
-    const [whoisResponse, dnsResponse] = await Promise.all([
+    // Call all three APIs in parallel
+    const [whoisResponse, dnsResponse, propagationResponse] = await Promise.all([
       fetch('/api/whois', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,11 +68,17 @@ async function performFullLookup(domain) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
+      }),
+      fetch('/api/propagation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
       })
     ]);
 
     const whoisData = await whoisResponse.json();
     const dnsData = await dnsResponse.json();
+    const propagationData = await propagationResponse.json();
 
     // Check for errors
     if (!whoisResponse.ok || !whoisData.success) {
@@ -82,9 +89,14 @@ async function performFullLookup(domain) {
       throw new Error(dnsData.error || 'DNS query failed');
     }
 
-    // Display both results
+    if (!propagationResponse.ok || !propagationData.success) {
+      throw new Error(propagationData.error || 'Propagation check failed');
+    }
+
+    // Display all results
     displayWhoisResults(whoisData.data);
     displayDnsResults(dnsData.data);
+    displayPropagationResults(propagationData.data);
 
   } catch (err) {
     showError(err.message);
@@ -225,6 +237,104 @@ function displayDnsResults(data) {
   dnsResults.classList.remove('hidden');
 }
 
+// Display Propagation results (NEW!)
+function displayPropagationResults(data) {
+  const analysis = data.analysis;
+  
+  // Status with emoji
+  const statusElement = document.getElementById('propagationStatus');
+  if (analysis.isPropagated) {
+    statusElement.innerHTML = '<span class="text-green-600">✅ Propagated</span>';
+  } else {
+    statusElement.innerHTML = '<span class="text-yellow-600">⏳ Propagating</span>';
+  }
+  
+  // Percentage
+  document.getElementById('propagationPercentage').innerHTML = 
+    `<span class="text-blue-600">${analysis.percentage}%</span>`;
+  
+  // Server count
+  document.getElementById('propagationServers').innerHTML = 
+    `<span class="text-gray-800">${analysis.respondedServers} / ${analysis.totalServers}</span>`;
+  
+  // Message
+  document.getElementById('propagationMessage').textContent = analysis.message;
+  
+  // IP Summary
+  const ipSummary = document.getElementById('ipSummary');
+  if (analysis.uniqueIPSets && analysis.uniqueIPSets.length > 0) {
+    let summaryHTML = '<div class="bg-gray-50 p-4 rounded-lg"><p class="text-sm font-semibold text-gray-700 mb-2">IP Addresses Found:</p><ul class="space-y-1">';
+    
+    analysis.uniqueIPSets.forEach(ipSet => {
+      const ips = ipSet.ips.join(', ');
+      const serverCount = ipSet.servers.length;
+      const isConsistent = analysis.uniqueIPSets.length === 1;
+      const color = isConsistent ? 'text-green-700' : 'text-yellow-700';
+      
+      summaryHTML += `
+        <li class="text-sm ${color}">
+          <span class="font-mono font-semibold">${ips}</span>
+          <span class="text-gray-600"> (${serverCount} server${serverCount > 1 ? 's' : ''})</span>
+        </li>
+      `;
+    });
+    
+    summaryHTML += '</ul></div>';
+    ipSummary.innerHTML = summaryHTML;
+  } else {
+    ipSummary.innerHTML = '<p class="text-sm text-gray-500">No IP addresses found</p>';
+  }
+  
+  // Server Results
+  const serverResults = document.getElementById('serverResults');
+  serverResults.innerHTML = '';
+  
+  data.servers.forEach(server => {
+    const card = document.createElement('div');
+    card.className = 'bg-gray-50 p-4 rounded-lg border-l-4';
+    
+    // Determine status and styling
+    let statusIcon = '';
+    let borderColor = '';
+    let addressHTML = '';
+    
+    if (server.status === 'success' && server.addresses.length > 0) {
+      statusIcon = '✅';
+      borderColor = 'border-green-500';
+      addressHTML = server.addresses.map(ip => 
+        `<p class="font-mono text-sm text-gray-900">${ip}</p>`
+      ).join('');
+    } else if (server.status === 'no_data') {
+      statusIcon = '⚠️';
+      borderColor = 'border-yellow-500';
+      addressHTML = '<p class="text-sm text-gray-500">No A records</p>';
+    } else {
+      statusIcon = '❌';
+      borderColor = 'border-red-500';
+      addressHTML = `<p class="text-sm text-red-600">${server.error || 'Error'}</p>`;
+    }
+    
+    card.className += ` ${borderColor}`;
+    
+    card.innerHTML = `
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <p class="font-semibold text-gray-900">${statusIcon} ${server.server}</p>
+          <p class="text-xs text-gray-500">${server.ip} (${server.location})</p>
+        </div>
+      </div>
+      <div class="mt-2">
+        ${addressHTML}
+      </div>
+    `;
+    
+    serverResults.appendChild(card);
+  });
+  
+  // Show propagation results section
+  propagationResults.classList.remove('hidden');
+}
+
 // Helper function to display record lists
 function displayRecordList(elementId, records, formatter) {
   const element = document.getElementById(elementId);
@@ -286,6 +396,7 @@ function showError(message) {
   error.classList.remove('hidden');
   results.classList.add('hidden');
   dnsResults.classList.add('hidden');
+  propagationResults.classList.add('hidden');
 }
 
 // Hide all
@@ -293,4 +404,5 @@ function hideAll() {
   error.classList.add('hidden');
   results.classList.add('hidden');
   dnsResults.classList.add('hidden');
+  propagationResults.classList.add('hidden');
 }

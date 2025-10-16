@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,7 +16,7 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.1.0)
+### Current Features (v2.2.0)
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -34,6 +34,14 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - SOA Record (Start of Authority)
   - CAA Records (Certificate Authority)
 
+- ✅ **DNS Propagation Checker**
+  - Check propagation across 11 global DNS servers
+  - Real-time status indicators (Propagated/Propagating)
+  - Percentage-based metrics
+  - IP consistency verification
+  - Geographic distribution (USA, Europe, Global)
+  - Color-coded server results
+
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
   - 2-3 column responsive grid layout
@@ -43,15 +51,10 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ### Planned Features (Roadmap)
 
-- 📋 **DNS Propagation Checker** (Stage 4)
-  - Global DNS propagation status
-
-- 🚧 **DNS Records** (Stage 3 - In Progress)
-  - A, AAAA, MX, TXT, NS, SOA, CAA records
-  - Complete DNS record analysis
+- 📋 **SSL Certificate Analysis** (Stage 5)
+  - Certificate details and validation
 
 - 📋 **Future Stages**
-  - DNS Propagation Checker
   - SSL Certificate Analysis
   - Hosting Provider Detection
   - CMS/Technology Detection
@@ -231,5 +234,5 @@ Upcoming Features
 
 
 Last Updated: 2025-01-11
-Version: 2.1.0
-Status: Production (Stage 3 Complete)
+Version: 2.2.0
+Status: Production (Stage 4 Complete)
