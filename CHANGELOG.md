@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.2.0] - 2025-01-16
+## [2.2.0] - 2025-10-16
 
 ### Added
 - **DNS Propagation Checker** (Stage 4)
@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.1.0] - 2025-01-15
+## [2.1.0] - 2025-10-15
 
 ### Added
 - **DNS Records Query** (Stage 3)
@@ -138,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.0.0] - 2025-01-10
+## [2.0.0] - 2025-10-10
 
 ### Added
 - **Initial Release** (Stage 1)
@@ -184,10 +184,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-| Version | Date       | Description                    | Stage   |
-|---------|------------|--------------------------------|---------|
-| 2.0.0   | 2025-01-11 | WHOIS Lookup + UI Improvements | Stage 2 |
-| 1.0.0   | 2025-01-10 | Infrastructure & Hello World   | Stage 1 |
+
+| Version | Date          | Stage   | Description                        |
+|---------|---------------|---------|------------------------------------|
+| 2.2.0   | Oct 16, 2025  | Stage 4 | DNS Propagation Checker            |
+| 2.1.0   | Oct 13, 2025  | Stage 3 | DNS Records Query                  |
+| 2.0.0   | Oct 10, 2025  | Stage 2 | WHOIS Lookup + UI Improvements     |
+| 1.0.0   | Oct 05, 2025  | Stage 1 | Infrastructure & Hello World       |
 
 ---
 

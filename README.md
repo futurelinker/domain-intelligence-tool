@@ -48,17 +48,14 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - Collapsible debug information
   - Mobile-friendly interface
   - Real-time lookup feedback
+  - Visual status indicators
 
 ### Planned Features (Roadmap)
 
-- 📋 **SSL Certificate Analysis** (Stage 5)
-  - Certificate details and validation
-
-- 📋 **Future Stages**
-  - SSL Certificate Analysis
-  - Hosting Provider Detection
-  - CMS/Technology Detection
-  - Website Screenshots
+- **Stage 5:** SSL Certificate Deep Analysis
+- **Stage 6:** Hosting Provider Detection
+- **Stage 7:** CMS/Technology Detection
+- **Stage 8:** Website Screenshots
 
 ---
 
@@ -70,11 +67,13 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 - Node.js 18+ (ES Modules)
 - Express.js web framework
 - whoiser (WHOIS lookups)
+- Node.js built-in DNS module (DNS queries & propagation)
 
 **Frontend:**
 - HTML5, CSS3, JavaScript (ES6+)
 - Tailwind CSS (CDN)
 - Responsive design
+- No external JavaScript libraries
 
 **Infrastructure:**
 - Docker & Docker Compose
@@ -85,29 +84,6 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 **Version Control:**
 - Git / GitHub
 - Semantic Versioning (SemVer)
-
----
-
-## 📦 Project Structure
-
-domain-intelligence-tool/
-├── src/
-│   ├── server.js           # Express server (ES Modules)
-│   ├── whois.js            # WHOIS lookup module
-│   ├── dns.js              # DNS query module (Stage 3)
-│   └── public/
-│       ├── index.html      # Frontend UI
-│       ├── app.js          # Frontend JavaScript
-│       └── style.css       # (Replaced by Tailwind)
-├── .git/                   # Git repository
-├── .gitignore              # Git ignore rules
-├── .dockerignore           # Docker ignore rules
-├── Dockerfile              # Container image definition
-├── docker-compose.yml      # Container orchestration
-├── package.json            # Node.js dependencies
-├── README.md               # This file
-├── CHANGELOG.md            # Version history
-└── VERSION                 # Current version
 
 ---
 
@@ -199,40 +175,29 @@ MAJOR.MINOR.PATCH (e.g., 2.0.0)
 
 Current Version: See VERSION file and CHANGELOG.md
 
-## 🤝 Contributing
-This is a personal project for internal use. If you'd like to contribute:
-
-* Fork the repository
-* Create a feature branch
-* Make your changes
-* Submit a pull request
-
-
 ## 📄 License
 MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-whoiser - WHOIS data parsing
-Express.js - Web framework
-Tailwind CSS - UI styling
-Docker - Containerization
-Let's Encrypt - Free SSL certificates
-Claude (Anthropic) - Development assistance
++ whoiser - WHOIS data parsing
++ Express.js - Web framework
++ Tailwind CSS - UI styling
++ Docker - Containerization
++ Let's Encrypt - Free SSL certificates
++ Claude (Anthropic) - Development assistance
 
 
 ## 🗺️ Roadmap
 See CHANGELOG.md for detailed version history.
 Upcoming Features
 
- Stage 3: DNS Records Query
- Stage 4: DNS Propagation Checker
  Stage 5: SSL Certificate Deep Analysis
  Stage 6: Hosting Provider Detection
  Stage 7: CMS/Technology Detection
  Stage 8: Website Screenshots
 
 
-Last Updated: 2025-01-11
+Last Updated: 2025-10-16
 Version: 2.2.0
 Status: Production (Stage 4 Complete)
