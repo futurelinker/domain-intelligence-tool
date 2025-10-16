@@ -188,7 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | Version | Date          | Stage   | Description                        |
 |---------|---------------|---------|------------------------------------|
 | 2.2.0   | Oct 16, 2025  | Stage 4 | DNS Propagation Checker            |
-| 2.1.0   | Oct 13, 2025  | Stage 3 | DNS Records Query                  |
+| 2.1.0   | Oct 15, 2025  | Stage 3 | DNS Records Query                  |
 | 2.0.0   | Oct 10, 2025  | Stage 2 | WHOIS Lookup + UI Improvements     |
 | 1.0.0   | Oct 05, 2025  | Stage 1 | Infrastructure & Hello World       |
 
