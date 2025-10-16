@@ -2,6 +2,8 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { lookupDomain } from './whois.js';
+import { queryAllRecords } from './dns.js'; 
+
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -60,6 +62,42 @@ app.post('/api/whois', async (req, res) => {
     });
   }
 });
+
+// DNS query endpoint
+app.post('/api/dns', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+
+    console.log(`📥 DNS request for: ${domain}`);
+
+    // Perform DNS query
+    const dnsData = await queryAllRecords(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: dnsData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('DNS API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 
 // Serve index.html for root route
 app.get('/', (req, res) => {

@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- DNS Records Query (Stage 3)
 - DNS Propagation Checker (Stage 4)
 - SSL Certificate Analysis (Stage 5)
 - Hosting Provider Detection (Stage 6)
@@ -19,9 +18,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.0.0] - 2025-01-11
+## [2.1.0] - 2025-01-11
 
 ### Added
+- **DNS Records Query** (Stage 3)
+  - Complete DNS record analysis for all major record types
+  - A Records (IPv4 addresses)
+  - AAAA Records (IPv6 addresses)
+  - MX Records (Mail servers with priority)
+  - TXT Records (SPF, DKIM, DMARC, verification records)
+  - NS Records (Name servers from DNS)
+  - SOA Record (Start of Authority with full details)
+  - CAA Records (Certificate Authority Authorization)
+- **Backend Module**
+  - `src/dns.js` module using Node.js built-in DNS
+  - Parallel DNS queries for fast performance (1-2 seconds)
+  - `/api/dns` API endpoint
+  - Comprehensive error handling for missing records
+- **Frontend Improvements**
+  - DNS records displayed in responsive 2-3 column grid layout
+  - Visual consistency with WHOIS section (same container)
+  - TXT records full-width display (handles long content)
+  - Mobile-responsive design (1 column on mobile, 2-3 on desktop)
+  - "No records found" messaging for optional record types
+- **Performance Optimization**
+  - Parallel WHOIS + DNS API calls (faster than sequential)
+  - Promise.allSettled for DNS queries (all types at once)
 - **WHOIS Lookup Feature** (Stage 2)
   - Full domain registration information
   - Registrar details with creation/expiration dates
@@ -48,6 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed __dirname compatibility for ES Modules
 
 ### Changed
+- Updated main container to include both WHOIS and DNS results
+- Reorganized DNS record display for better space utilization
+- Improved record formatting (monospace fonts for technical data)
 - Button text: "Analyze" → "Full Lookup"
 - Reorganized UI sections for better UX
 - Moved Name Servers section above Domain Status
@@ -60,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Domain status link parsing and display
 
 ### Technical
+- Using Node.js built-in `dns` module (no external dependencies)
+- ES Modules throughout
+- XSS protection for TXT record display
 - Package: Added `whoiser@^1.17.3`
 - Package: Added `"type": "module"` for ES Modules support
 - Improved Docker build process
@@ -68,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2025-01-10
+## [2.0.0] - 2025-01-10
 
 ### Added
 - **Initial Release** (Stage 1)

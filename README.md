@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,7 +16,7 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.0.0)
+### Current Features (v2.1.0)
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -25,13 +25,26 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - DNSSEC status
   - Name servers
 
+- ✅ **DNS Records Query**
+  - A Records (IPv4 addresses)
+  - AAAA Records (IPv6 addresses)
+  - MX Records (Mail servers with priority)
+  - TXT Records (SPF, DKIM, DMARC)
+  - NS Records (Name servers)
+  - SOA Record (Start of Authority)
+  - CAA Records (Certificate Authority)
+
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
+  - 2-3 column responsive grid layout
   - Collapsible debug information
   - Mobile-friendly interface
   - Real-time lookup feedback
 
 ### Planned Features (Roadmap)
+
+- 📋 **DNS Propagation Checker** (Stage 4)
+  - Global DNS propagation status
 
 - 🚧 **DNS Records** (Stage 3 - In Progress)
   - A, AAAA, MX, TXT, NS, SOA, CAA records
@@ -218,5 +231,5 @@ Upcoming Features
 
 
 Last Updated: 2025-01-11
-Version: 2.0.0
-Status: Production (Stage 2 Complete)
+Version: 2.1.0
+Status: Production (Stage 3 Complete)
