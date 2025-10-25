@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,11 +16,13 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.2.0)
+### Current Features (v2.3.0)
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
   - Registration and expiration dates
+  - **Brazilian domain support (.br, .com.br)**
+  - **Provider field for Brazilian domains**
   - Domain status with ICANN reference links
   - DNSSEC status
   - Name servers
@@ -35,12 +37,17 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - CAA Records (Certificate Authority)
 
 - ✅ **DNS Propagation Checker**
+  - Check A, NS, MX, TXT record propagation
   - Check propagation across 11 global DNS servers
   - Real-time status indicators (Propagated/Propagating)
   - Percentage-based metrics
   - IP consistency verification
   - Geographic distribution (USA, Europe, Global)
   - Color-coded server results
+
+- ✅ **Dynamic Version Display**
+  - Auto-updates from VERSION file
+  - Single source of truth
 
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
@@ -198,6 +205,6 @@ Upcoming Features
  Stage 8: Website Screenshots
 
 
-Last Updated: October 16, 2025
-Version: 2.2.0
-Status: Production (Stage 4 Complete)
+**Last Updated:** October 25, 2025
+**Version: 2.3.0**
+**Status:** Production (Improvements Release Complete)

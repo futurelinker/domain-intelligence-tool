@@ -3,13 +3,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { lookupDomain } from './whois.js';
 import { queryAllRecords } from './dns.js';
-import { checkPropagation } from './propagation.js';
-
+import { checkPropagation, checkAllPropagation } from './propagation.js';
+import { isSubdomain, getRootDomain } from './utils.js';
+import { readFileSync } from 'fs'; 
 
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Read VERSION file once at startup
+const VERSION = readFileSync(path.join(__dirname, '../VERSION'), 'utf8').trim();
+console.log(`📌 Version: ${VERSION}`);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,8 +30,8 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     message: 'Domain Intelligence Tool API is running',
-    timestamp: new Date().toISOString(),
-    version: '2.0.0'
+    version: VERSION,
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -48,10 +53,18 @@ app.post('/api/whois', async (req, res) => {
     // Perform WHOIS lookup
     const whoisData = await lookupDomain(domain);
 
+    // Add subdomain detection info
+    const isSubdomainResult = isSubdomain(domain);
+    const enrichedData = {
+      ...whoisData,
+      isSubdomain: isSubdomainResult,
+      rootDomain: isSubdomainResult ? getRootDomain(domain) : null
+    };
+
     // Return results
     res.json({
       success: true,
-      data: whoisData,
+      data: enrichedData,
       timestamp: new Date().toISOString()
     });
 
@@ -127,6 +140,41 @@ app.post('/api/propagation', async (req, res) => {
 
   } catch (error) {
     console.error('Propagation API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// DNS Propagation ALL record types endpoint
+app.post('/api/propagation-all', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+
+    console.log(`📥 Propagation-all check request for: ${domain}`);
+
+    // Check propagation for all record types
+    const propagationData = await checkAllPropagation(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: propagationData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Propagation-all API error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

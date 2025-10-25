@@ -111,7 +111,151 @@ async function queryDnsServer(domain, server) {
       }
     });
   });
-}
+} // End of queryDnsServer
+
+/**
+ * Query NS records from a specific DNS server
+ * @param {string} domain - Domain to query
+ * @param {Object} server - DNS server info
+ * @returns {Promise<Object>} - Query result
+ */
+async function queryNsRecords(domain, server) {
+  return new Promise((resolve, reject) => {
+    const resolver = new Resolver();
+    resolver.setServers([server.ip]);
+
+    const timeout = setTimeout(() => {
+      reject(new Error('Query timeout'));
+    }, 5000);
+
+    resolver.resolveNs(domain, (err, addresses) => {
+      clearTimeout(timeout);
+
+      if (err) {
+        if (err.code === 'ENODATA' || err.code === 'ENOTFOUND') {
+          resolve({
+            server: server.name,
+            ip: server.ip,
+            location: server.location,
+            addresses: [],
+            error: 'No NS records found',
+            status: 'no_data'
+          });
+        } else {
+          reject(err);
+        }
+      } else {
+        resolve({
+          server: server.name,
+          ip: server.ip,
+          location: server.location,
+          addresses: addresses.sort(), // Sort for consistent comparison
+          status: 'success'
+        });
+      }
+    });
+  });
+}  // End of queryNsRecords
+
+/**
+ * Query MX records from a specific DNS server
+ * @param {string} domain - Domain to query
+ * @param {Object} server - DNS server info
+ * @returns {Promise<Object>} - Query result
+ */
+async function queryMxRecords(domain, server) {
+  return new Promise((resolve, reject) => {
+    const resolver = new Resolver();
+    resolver.setServers([server.ip]);
+
+    const timeout = setTimeout(() => {
+      reject(new Error('Query timeout'));
+    }, 5000);
+
+    resolver.resolveMx(domain, (err, addresses) => {
+      clearTimeout(timeout);
+
+      if (err) {
+        if (err.code === 'ENODATA' || err.code === 'ENOTFOUND') {
+          resolve({
+            server: server.name,
+            ip: server.ip,
+            location: server.location,
+            addresses: [],
+            error: 'No MX records found',
+            status: 'no_data'
+          });
+        } else {
+          reject(err);
+        }
+      } else {
+        // Extract just exchange names (ignore priority for comparison)
+        const exchanges = addresses
+          .map(mx => mx.exchange.toLowerCase())
+          .sort();
+        
+        resolve({
+          server: server.name,
+          ip: server.ip,
+          location: server.location,
+          addresses: exchanges,
+          fullRecords: addresses, // Keep full records with priority
+          status: 'success'
+        });
+      }
+    });
+  });
+} // End of queryMxRecords
+
+/**
+ * Query TXT records from a specific DNS server
+ * @param {string} domain - Domain to query
+ * @param {Object} server - DNS server info
+ * @returns {Promise<Object>} - Query result
+ */
+async function queryTxtRecords(domain, server) {
+  return new Promise((resolve, reject) => {
+    const resolver = new Resolver();
+    resolver.setServers([server.ip]);
+
+    const timeout = setTimeout(() => {
+      reject(new Error('Query timeout'));
+    }, 5000);
+
+    resolver.resolveTxt(domain, (err, addresses) => {
+      clearTimeout(timeout);
+
+      if (err) {
+        if (err.code === 'ENODATA' || err.code === 'ENOTFOUND') {
+          resolve({
+            server: server.name,
+            ip: server.ip,
+            location: server.location,
+            addresses: [],
+            error: 'No TXT records found',
+            status: 'no_data'
+          });
+        } else {
+          reject(err);
+        }
+      } else {
+        // Flatten and sort TXT records
+        const txtRecords = addresses
+          .map(record => record.join(''))
+          .sort();
+        
+        resolve({
+          server: server.name,
+          ip: server.ip,
+          location: server.location,
+          addresses: txtRecords,
+          status: 'success'
+        });
+      }
+    });
+  });
+} // End of queryTxtRecords
+
 
 /**
  * Analyze propagation results
@@ -173,4 +317,186 @@ function analyzePropagation(serverResults) {
       ? 'DNS fully propagated globally' 
       : `DNS propagation in progress (${percentage}% of servers responding)`
   };
+} // End of analyzePropagation
+
+/**
+ * Check propagation for a specific record type
+ * @param {string} domain - Domain name
+ * @param {string} recordType - Record type (A, NS, MX, TXT)
+ * @returns {Promise<Object>} - Propagation results
+ */
+async function checkPropagationByType(domain, recordType) {
+  try {
+    console.log(`🔍 Checking ${recordType} record propagation for: ${domain}`);
+
+    // Select appropriate query function
+    let queryFunction;
+    switch (recordType) {
+      case 'A':
+        queryFunction = queryDnsServer;
+        break;
+      case 'NS':
+        queryFunction = queryNsRecords;
+        break;
+      case 'MX':
+        queryFunction = queryMxRecords;
+        break;
+      case 'TXT':
+        queryFunction = queryTxtRecords;
+        break;
+      default:
+        throw new Error(`Unsupported record type: ${recordType}`);
+    }
+
+    // Query all DNS servers in parallel
+    const results = await Promise.allSettled(
+      DNS_SERVERS.map(server => queryFunction(domain, server))
+    );
+
+    // Extract results
+    const serverResults = results.map((result, index) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        return {
+          server: DNS_SERVERS[index].name,
+          ip: DNS_SERVERS[index].ip,
+          location: DNS_SERVERS[index].location,
+          addresses: [],
+          error: result.reason?.message || 'Query failed',
+          status: 'error'
+        };
+      }
+    });
+
+    // Analyze propagation
+    const analysis = analyzePropagationByType(serverResults, recordType);
+
+    console.log(`✅ ${recordType} propagation check complete: ${analysis.percentage}%`);
+
+    return {
+      recordType: recordType,
+      servers: serverResults,
+      analysis: analysis
+    };
+
+  } catch (error) {
+    console.error(`❌ ${recordType} propagation check failed:`, error.message);
+    throw error;
+  }
+
+} // End of checkPropagationByType
+
+/**
+ * Analyze propagation results for any record type
+ * @param {Array} serverResults - Results from all servers
+ * @param {string} recordType - Type of record being analyzed
+ * @returns {Object} - Analysis
+ */
+function analyzePropagationByType(serverResults, recordType) {
+  const successfulQueries = serverResults.filter(
+    r => r.status === 'success' && r.addresses && r.addresses.length > 0
+  );
+
+  if (successfulQueries.length === 0) {
+    return {
+      isPropagated: false,
+      percentage: 0,
+      totalServers: serverResults.length,
+      respondedServers: 0,
+      uniqueValues: [],
+      message: `No ${recordType} records found on any DNS server`
+    };
+  }
+
+  // Collect unique record sets
+  const recordSets = new Map();
+  successfulQueries.forEach(result => {
+    const recordKey = result.addresses.sort().join('|');
+    if (!recordSets.has(recordKey)) {
+      recordSets.set(recordKey, {
+        records: result.addresses,
+        servers: []
+      });
+    }
+    recordSets.get(recordKey).servers.push(result.server);
+  });
+
+  // Calculate metrics
+  const totalServers = serverResults.length;
+  const respondedServers = successfulQueries.length;
+  const percentage = Math.round((respondedServers / totalServers) * 100);
+  const isPropagated = recordSets.size === 1 && respondedServers === totalServers;
+
+  // Get all unique values
+  const allUniqueValues = new Set();
+  successfulQueries.forEach(result => {
+    result.addresses.forEach(record => allUniqueValues.add(record));
+  });
+
+  return {
+    isPropagated: isPropagated,
+    percentage: percentage,
+    totalServers: totalServers,
+    respondedServers: respondedServers,
+    uniqueValues: Array.from(allUniqueValues),
+    uniqueRecordSets: Array.from(recordSets.entries()).map(([key, value]) => ({
+      records: value.records,
+      servers: value.servers
+    })),
+    message: isPropagated 
+      ? `${recordType} records fully propagated globally` 
+      : `${recordType} records propagation in progress (${percentage}% of servers responding)`
+  };
+} // End of analyzePropagationByType
+
+/**
+ * Check propagation for all record types
+ * @param {string} domain - Domain name to check
+ * @returns {Promise<Object>} - All propagation results
+ */
+export async function checkAllPropagation(domain) {
+  try {
+    console.log(`🌍 Checking all DNS propagation for: ${domain}`);
+
+    // Query all record types in parallel
+    const [aResults, nsResults, mxResults, txtResults] = await Promise.allSettled([
+      checkPropagationByType(domain, 'A'),
+      checkPropagationByType(domain, 'NS'),
+      checkPropagationByType(domain, 'MX'),
+      checkPropagationByType(domain, 'TXT')
+    ]);
+
+    const extractResult = (result) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        return {
+          recordType: 'unknown',
+          servers: [],
+          analysis: {
+            isPropagated: false,
+            percentage: 0,
+            totalServers: 0,
+            respondedServers: 0,
+            uniqueValues: [],
+            message: `Query failed: ${result.reason?.message || 'Unknown error'}`
+          }
+        };
+      }
+    };
+
+    return {
+      domain: domain,
+      a: extractResult(aResults),
+      ns: extractResult(nsResults),
+      mx: extractResult(mxResults),
+      txt: extractResult(txtResults),
+      timestamp: new Date().toISOString()
+    };
+
+  } catch (error) {
+    console.error(`❌ All propagation check failed:`, error.message);
+    throw new Error(`All propagation check failed: ${error.message}`);
+  }
 }

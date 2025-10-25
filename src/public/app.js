@@ -50,6 +50,10 @@ document.addEventListener('click', (e) => {
 async function performFullLookup(domain) {
   // Hide previous results/errors
   hideAll();
+  error.classList.add('hidden');
+  results.classList.add('hidden');
+  document.getElementById('subdomainBanner').classList.add('hidden');
+  // DON'T hide DNS and Propagation - we'll let the display functions handle it
   
   // Show loading
   loading.classList.remove('hidden');
@@ -69,7 +73,7 @@ async function performFullLookup(domain) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
       }),
-      fetch('/api/propagation', {
+      fetch('/api/propagation-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
@@ -98,6 +102,33 @@ async function performFullLookup(domain) {
     displayDnsResults(dnsData.data);
     displayPropagationResults(propagationData.data);
 
+// For subdomains: Force DNS and Propagation to be visible
+    if (whoisData.data.isSubdomain) {
+      setTimeout(() => {
+        const dns = document.getElementById('dnsResults');
+        const prop = document.getElementById('propagationResults');
+        
+        // Remove hidden class
+        dns.classList.remove('hidden');
+        prop.classList.remove('hidden');
+        
+        // Force display
+        dns.style.display = 'block';
+        prop.style.display = 'block';
+        
+        // Also remove from parent if needed
+        dns.style.visibility = 'visible';
+        prop.style.visibility = 'visible';
+        
+        console.log('✅ Forced DNS/Prop visible:', {
+          dnsClasses: dns.className,
+          propClasses: prop.className,
+          dnsDisplay: dns.style.display,
+          propDisplay: prop.style.display
+        });
+      }, 200);
+    }
+
   } catch (err) {
     showError(err.message);
   } finally {
@@ -108,11 +139,48 @@ async function performFullLookup(domain) {
   }
 }
 
-// Display WHOIS results
+  // Display WHOIS results
 function displayWhoisResults(data) {
+  // Check if subdomain
+  const subdomainBanner = document.getElementById('subdomainBanner');
+  
+  if (data.isSubdomain) {
+    // Show subdomain banner
+    document.getElementById('subdomainName').textContent = data.domain;
+    document.getElementById('rootDomainName').textContent = data.rootDomain;
+    subdomainBanner.classList.remove('hidden');
+    
+    // Hide WHOIS section for subdomains
+    results.classList.add('hidden');
+    
+    // Add click handler for "lookup root domain" button
+    document.getElementById('lookupRootDomain').onclick = () => {
+      domainInput.value = data.rootDomain;
+      performFullLookup(data.rootDomain);
+    };
+    
+    // Exit early - don't display WHOIS data
+    return;
+
+  } else {
+    // Hide subdomain banner for root domains
+    subdomainBanner.classList.add('hidden');
+  }
+
   // Populate domain info
   document.getElementById('domainName').textContent = data.domain;
   document.getElementById('registrar').textContent = data.registrar;
+
+   // Display provider (for Brazilian domains only)
+  const providerContainer = document.getElementById('providerContainer');
+  const providerElement = document.getElementById('provider');
+  
+  if (data.provider) {
+    providerContainer.classList.remove('hidden');
+    providerElement.textContent = data.provider;
+  } else {
+    providerContainer.classList.add('hidden');
+  }
   
   // Populate dates
   document.getElementById('createdDate').textContent = formatDate(data.createdDate);
@@ -180,6 +248,7 @@ function displayWhoisResults(data) {
 
 // Display DNS results
 function displayDnsResults(data) {
+  console.log('📥 displayDnsResults called with data:', data);
   // A Records (IPv4)
   displayRecordList('aRecords', data.a, (record) => 
     `<span class="font-mono text-gray-900">${record.address}</span>`
@@ -237,81 +306,91 @@ function displayDnsResults(data) {
   dnsResults.classList.remove('hidden');
 }
 
-// Display Propagation results (NEW!)
+// Display Propagation results (ALL record types)
 function displayPropagationResults(data) {
-  const analysis = data.analysis;
+  console.log('📥 displayDnsResults called with data:', data);
+  // Display each record type
+  displaySinglePropagation('a', data.a);
+  displaySinglePropagation('ns', data.ns);
+  displaySinglePropagation('mx', data.mx);
+  displaySinglePropagation('txt', data.txt);
+  
+  // Show propagation results section
+  propagationResults.classList.remove('hidden');
+}
+
+// Display single record type propagation
+function displaySinglePropagation(recordType, propagationData) {
+  const analysis = propagationData.analysis;
   
   // Status with emoji
-  const statusElement = document.getElementById('propagationStatus');
+  const statusElement = document.getElementById(`${recordType}Status`);
   if (analysis.isPropagated) {
     statusElement.innerHTML = '<span class="text-green-600">✅ Propagated</span>';
+  } else if (analysis.respondedServers === 0) {
+    statusElement.innerHTML = '<span class="text-gray-600">⚠️ No Records</span>';
   } else {
     statusElement.innerHTML = '<span class="text-yellow-600">⏳ Propagating</span>';
   }
   
   // Percentage
-  document.getElementById('propagationPercentage').innerHTML = 
+  document.getElementById(`${recordType}Percentage`).innerHTML = 
     `<span class="text-blue-600">${analysis.percentage}%</span>`;
   
   // Server count
-  document.getElementById('propagationServers').innerHTML = 
+  document.getElementById(`${recordType}Servers`).innerHTML = 
     `<span class="text-gray-800">${analysis.respondedServers} / ${analysis.totalServers}</span>`;
   
   // Message
-  document.getElementById('propagationMessage').textContent = analysis.message;
+  document.getElementById(`${recordType}Message`).textContent = analysis.message;
   
-  // IP Summary
-  const ipSummary = document.getElementById('ipSummary');
-  if (analysis.uniqueIPSets && analysis.uniqueIPSets.length > 0) {
-    let summaryHTML = '<div class="bg-gray-50 p-4 rounded-lg"><p class="text-sm font-semibold text-gray-700 mb-2">IP Addresses Found:</p><ul class="space-y-1">';
+  // Values Summary
+  const valuesDiv = document.getElementById(`${recordType}Values`);
+  if (analysis.uniqueValues && analysis.uniqueValues.length > 0) {
+    let valuesHTML = '<div class="bg-gray-50 p-4 rounded-lg"><p class="text-sm font-semibold text-gray-700 mb-2">Values Found:</p><ul class="space-y-1">';
     
-    analysis.uniqueIPSets.forEach(ipSet => {
-      const ips = ipSet.ips.join(', ');
-      const serverCount = ipSet.servers.length;
-      const isConsistent = analysis.uniqueIPSets.length === 1;
+    analysis.uniqueValues.forEach(value => {
+      const isConsistent = analysis.uniqueRecordSets && analysis.uniqueRecordSets.length === 1;
       const color = isConsistent ? 'text-green-700' : 'text-yellow-700';
-      
-      summaryHTML += `
-        <li class="text-sm ${color}">
-          <span class="font-mono font-semibold">${ips}</span>
-          <span class="text-gray-600"> (${serverCount} server${serverCount > 1 ? 's' : ''})</span>
-        </li>
-      `;
+      valuesHTML += `<li class="text-sm ${color} font-mono break-all">${escapeHtml(value)}</li>`;
     });
     
-    summaryHTML += '</ul></div>';
-    ipSummary.innerHTML = summaryHTML;
+    valuesHTML += '</ul></div>';
+    valuesDiv.innerHTML = valuesHTML;
   } else {
-    ipSummary.innerHTML = '<p class="text-sm text-gray-500">No IP addresses found</p>';
+    valuesDiv.innerHTML = '';
   }
   
   // Server Results
-  const serverResults = document.getElementById('serverResults');
+  const serverResults = document.getElementById(`${recordType}ServerResults`);
   serverResults.innerHTML = '';
   
-  data.servers.forEach(server => {
+  propagationData.servers.forEach(server => {
     const card = document.createElement('div');
     card.className = 'bg-gray-50 p-4 rounded-lg border-l-4';
     
     // Determine status and styling
     let statusIcon = '';
     let borderColor = '';
-    let addressHTML = '';
+    let contentHTML = '';
     
-    if (server.status === 'success' && server.addresses.length > 0) {
+    if (server.status === 'success' && server.addresses && server.addresses.length > 0) {
       statusIcon = '✅';
       borderColor = 'border-green-500';
-      addressHTML = server.addresses.map(ip => 
-        `<p class="font-mono text-sm text-gray-900">${ip}</p>`
+      
+      // Display addresses
+      contentHTML = server.addresses.map(addr => 
+        `<p class="font-mono text-sm text-gray-900 break-all">${escapeHtml(addr)}</p>`
       ).join('');
+      
     } else if (server.status === 'no_data') {
       statusIcon = '⚠️';
       borderColor = 'border-yellow-500';
-      addressHTML = '<p class="text-sm text-gray-500">No A records</p>';
+      contentHTML = `<p class="text-sm text-gray-500">No ${recordType.toUpperCase()} records</p>`;
     } else {
       statusIcon = '❌';
       borderColor = 'border-red-500';
-      addressHTML = `<p class="text-sm text-red-600">${server.error || 'Error'}</p>`;
+      contentHTML = `<p class="text-sm text-red-600">${escapeHtml(server.error || 'Error')}</p>`;
     }
     
     card.className += ` ${borderColor}`;
@@ -324,15 +403,12 @@ function displayPropagationResults(data) {
         </div>
       </div>
       <div class="mt-2">
-        ${addressHTML}
+        ${contentHTML}
       </div>
     `;
     
     serverResults.appendChild(card);
   });
-  
-  // Show propagation results section
-  propagationResults.classList.remove('hidden');
 }
 
 // Helper function to display record lists
@@ -405,4 +481,20 @@ function hideAll() {
   results.classList.add('hidden');
   dnsResults.classList.add('hidden');
   propagationResults.classList.add('hidden');
+  document.getElementById('subdomainBanner').classList.add('hidden');
 }
+
+// Load version on page load
+async function loadVersion() {
+  try {
+    const response = await fetch('/api/health');
+    const data = await response.json();
+    document.getElementById('footerVersion').textContent = data.version || '2.3.0';
+  } catch (error) {
+    console.error('Failed to load version:', error);
+    document.getElementById('footerVersion').textContent = '2.3.0';
+  }
+}
+
+// Call on page load
+window.addEventListener('DOMContentLoaded', loadVersion);

@@ -17,7 +17,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.2.0] - 2025-10-16
+## [2.3.0] - October 25, 2025
+
+### Added
+- **Brazilian Domain Support (.br/.com.br)**
+  - Full WHOIS parsing for Brazilian domains
+  - Provider field display (e.g., HSTDOMAINS (127), NENHUM)
+  - Support for Registro.br date formats (YYYYMMDD)
+  - Special handling for Brazilian WHOIS field variations
+  - Provider description text for user clarity
+- **Multi-Record DNS Propagation Checker**
+  - A Record propagation (IPv4 addresses)
+  - NS Record propagation (Name servers)
+  - MX Record propagation (Mail servers)
+  - TXT Record propagation (SPF/DKIM/DMARC)
+  - All record types checked simultaneously in parallel
+  - Separate visual sections for each record type
+  - Color-coded badges (A=blue, NS=green, MX=purple, TXT=amber)
+  - Individual analysis and metrics per record type
+- **Smart Subdomain Detection**
+  - Automatic subdomain recognition
+  - Info banner for subdomain lookups
+  - Hide WHOIS section for subdomains (not available)
+  - Show DNS and Propagation data for subdomains
+  - "Lookup root domain" quick action button
+  - Support for multi-level subdomains (www.api.example.com)
+  - Support for special TLDs (.com.br, .com.ar, .co.uk, etc.)
+- **Dynamic Version Display**
+  - Footer version auto-updates from VERSION file
+  - Version available in /api/health endpoint
+  - Single source of truth for version number
+  - Fallback version if API unavailable
+- **Backend Utilities**
+  - New utils.js module with subdomain detection functions
+  - isSubdomain() - detect subdomains
+  - getRootDomain() - extract root domain from subdomain
+  - Support for special multi-part TLDs
+
+### Changed
+- Enhanced WHOIS UI to conditionally show provider field (Brazilian domains only)
+- Expanded propagation display with 4 separate sections (one per record type)
+- Updated /api/whois endpoint to include isSubdomain and rootDomain fields
+- Improved error messaging for missing record types
+- Updated /api/propagation to /api/propagation-all for multi-record support
+- Enhanced analyzePropagation logic to work with any record type
+
+### Fixed
+- Brazilian domain date parsing (handles YYYYMMDD format)
+- Subdomain WHOIS lookups no longer show confusing N/A fields
+- Provider field only shows when data is available
+- DNS propagation sections now properly visible for subdomains
+
+### Technical
+- Added VERSION file to Docker image (COPY VERSION ./)
+- Created analyzePropagationByType() for flexible record analysis
+- Created checkPropagationByType() for single record type queries
+- Created checkAllPropagation() export for all record types
+- Query functions for NS, MX, TXT records (queryNsRecords, queryMxRecords, queryTxtRecords)
+- Subdomain detection uses domain part counting with TLD awareness
+
+---
+
+## [2.2.0] - October 16, 2025
 
 ### Added
 - **DNS Propagation Checker** (Stage 4)
@@ -184,13 +245,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-
-| Version | Date          | Stage   | Description                        |
-|---------|---------------|---------|------------------------------------|
-| 2.2.0   | Oct 16, 2025  | Stage 4 | DNS Propagation Checker            |
-| 2.1.0   | Oct 15, 2025  | Stage 3 | DNS Records Query                  |
-| 2.0.0   | Oct 10, 2025  | Stage 2 | WHOIS Lookup + UI Improvements     |
-| 1.0.0   | Oct 05, 2025  | Stage 1 | Infrastructure & Hello World       |
+| Version | Date          | Stage            | Description                              |
+|---------|---------------|------------------|------------------------------------------|
+| 2.3.0   | Oct 25, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |
+| 2.2.0   | Oct 16, 2025  | Stage 4          | DNS Propagation Checker                  |
+| 2.1.0   | Oct 15, 2025  | Stage 3          | DNS Records Query                        |
+| 2.0.0   | Oct 10, 2025  | Stage 2          | WHOIS Lookup + UI Improvements           |
+| 1.0.0   | Oct 05, 2025  | Stage 1          | Infrastructure & Hello World             |
 
 ---
 
