@@ -320,97 +320,90 @@ function displayPropagationResults(data) {
   propagationResults.style.display = 'block';
 }
 
-// Display single record type propagation
+// Display single record type propagation (compact version)
 function displaySinglePropagation(recordType, propagationData) {
   const analysis = propagationData.analysis;
   
-  // Status with emoji
-  const statusElement = document.getElementById(`${recordType}Status`);
+  // Status badge
+  const statusBadge = document.getElementById(`${recordType}StatusBadge`);
   if (analysis.isPropagated) {
-    statusElement.innerHTML = '<span class="text-green-600">✅ Propagated</span>';
+    statusBadge.textContent = '✓ Propagated';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
   } else if (analysis.respondedServers === 0) {
-    statusElement.innerHTML = '<span class="text-gray-600">⚠️ No Records</span>';
+    statusBadge.textContent = 'No Records';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600';
   } else {
-    statusElement.innerHTML = '<span class="text-yellow-600">⏳ Propagating</span>';
+    statusBadge.textContent = 'Propagating';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
   }
   
-  // Percentage
-  document.getElementById(`${recordType}Percentage`).innerHTML = 
-    `<span class="text-blue-600">${analysis.percentage}%</span>`;
+  // Percentage badge
+  document.getElementById(`${recordType}PercentageBadge`).textContent = `${analysis.percentage}%`;
   
   // Server count
-  document.getElementById(`${recordType}Servers`).innerHTML = 
-    `<span class="text-gray-800">${analysis.respondedServers} / ${analysis.totalServers}</span>`;
+  document.getElementById(`${recordType}ServerCount`).textContent = 
+    `${analysis.respondedServers}/${analysis.totalServers} servers`;
   
-  // Message
-  document.getElementById(`${recordType}Message`).textContent = analysis.message;
-  
-  // Values Summary
+  // Values Summary (more compact)
   const valuesDiv = document.getElementById(`${recordType}Values`);
   if (analysis.uniqueValues && analysis.uniqueValues.length > 0) {
-    let valuesHTML = '<div class="bg-gray-50 p-4 rounded-lg"><p class="text-sm font-semibold text-gray-700 mb-2">Values Found:</p><ul class="space-y-1">';
+    const isConsistent = analysis.uniqueRecordSets && analysis.uniqueRecordSets.length === 1;
+    const bgColor = isConsistent ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200';
+    
+    let valuesHTML = `<div class="${bgColor} border rounded-lg p-3">`;
+    valuesHTML += '<p class="text-xs font-semibold text-gray-700 mb-2">Values Found:</p>';
+    valuesHTML += '<div class="flex flex-wrap gap-2">';
     
     analysis.uniqueValues.forEach(value => {
-      const isConsistent = analysis.uniqueRecordSets && analysis.uniqueRecordSets.length === 1;
-      const color = isConsistent ? 'text-green-700' : 'text-yellow-700';
-      valuesHTML += `<li class="text-sm ${color} font-mono break-all">${escapeHtml(value)}</li>`;
+      const color = isConsistent ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+      valuesHTML += `<span class="${color} px-2 py-1 rounded text-xs font-mono break-all">${escapeHtml(value)}</span>`;
     });
     
-    valuesHTML += '</ul></div>';
+    valuesHTML += '</div></div>';
     valuesDiv.innerHTML = valuesHTML;
   } else {
-    valuesDiv.innerHTML = '';
+    valuesDiv.innerHTML = '<p class="text-sm text-gray-500 italic">No records found</p>';
   }
   
-  // Server Results
+  // Server Results (more compact cards)
   const serverResults = document.getElementById(`${recordType}ServerResults`);
   serverResults.innerHTML = '';
   
   propagationData.servers.forEach(server => {
     const card = document.createElement('div');
-    card.className = 'bg-gray-50 p-4 rounded-lg border-l-4';
+    card.className = 'bg-white border rounded p-2 text-xs';
     
     // Determine status and styling
     let statusIcon = '';
-    let borderColor = '';
+    let borderColor = 'border-gray-300';
     let contentHTML = '';
     
     if (server.status === 'success' && server.addresses && server.addresses.length > 0) {
-      statusIcon = '✅';
-      borderColor = 'border-green-500';
-      
-      // Display addresses
-      contentHTML = server.addresses.map(addr => 
-        `<p class="font-mono text-sm text-gray-900 break-all">${escapeHtml(addr)}</p>`
-      ).join('');
-      
+      statusIcon = '<span class="text-green-600">✓</span>';
+      borderColor = 'border-green-300';
+      contentHTML = `<div class="text-gray-600 mt-1 font-mono truncate" title="${escapeHtml(server.addresses[0])}">${escapeHtml(server.addresses[0])}</div>`;
     } else if (server.status === 'no_data') {
-      statusIcon = '⚠️';
-      borderColor = 'border-yellow-500';
-      contentHTML = `<p class="text-sm text-gray-500">No ${recordType.toUpperCase()} records</p>`;
+      statusIcon = '<span class="text-gray-400">○</span>';
+      contentHTML = `<div class="text-gray-400 mt-1 text-xs">No data</div>`;
     } else {
-      statusIcon = '❌';
-      borderColor = 'border-red-500';
-      contentHTML = `<p class="text-sm text-red-600">${escapeHtml(server.error || 'Error')}</p>`;
+      statusIcon = '<span class="text-red-600">✗</span>';
+      borderColor = 'border-red-300';
+      contentHTML = `<div class="text-red-500 mt-1 text-xs">Error</div>`;
     }
     
     card.className += ` ${borderColor}`;
     
     card.innerHTML = `
-      <div class="flex items-start justify-between mb-2">
-        <div>
-          <p class="font-semibold text-gray-900">${statusIcon} ${server.server}</p>
-          <p class="text-xs text-gray-500">${server.ip} (${server.location})</p>
-        </div>
+      <div class="flex items-center justify-between">
+        <span class="font-semibold text-gray-800 truncate">${server.server}</span>
+        ${statusIcon}
       </div>
-      <div class="mt-2">
-        ${contentHTML}
-      </div>
+      ${contentHTML}
     `;
     
     serverResults.appendChild(card);
   });
-}
+} // End of displaySinglePropagation
 
 // Helper function to display record lists
 function displayRecordList(elementId, records, formatter) {
@@ -483,6 +476,20 @@ function hideAll() {
   dnsResults.classList.add('hidden');
   propagationResults.classList.add('hidden');
   document.getElementById('subdomainBanner').classList.add('hidden');
+}
+
+// Toggle collapsible sections
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  const chevron = document.getElementById(sectionId.replace('Details', 'Chevron'));
+  
+  if (section.classList.contains('hidden')) {
+    section.classList.remove('hidden');
+    chevron.classList.add('rotate-180');
+  } else {
+    section.classList.add('hidden');
+    chevron.classList.remove('rotate-180');
+  }
 }
 
 // Load version on page load
