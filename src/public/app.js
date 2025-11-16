@@ -317,6 +317,7 @@ function displayPropagationResults(data) {
   
   // Show propagation results section
   propagationResults.classList.remove('hidden');
+  propagationResults.style.display = 'block';
 }
 
 // Display single record type propagation
