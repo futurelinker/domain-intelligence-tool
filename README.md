@@ -36,14 +36,14 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - SOA Record (Start of Authority)
   - CAA Records (Certificate Authority)
 
-- ✅ **DNS Propagation Checker**
+- ✅ **Multi-Record DNS Propagation Checker**
   - Check A, NS, MX, TXT record propagation
-  - Check propagation across 11 global DNS servers
+  - 11 global DNS servers queried simultaneously
   - Real-time status indicators (Propagated/Propagating)
-  - Percentage-based metrics
-  - IP consistency verification
-  - Geographic distribution (USA, Europe, Global)
-  - Color-coded server results
+  - **Collapsible cards with summary view**
+  - **Click-to-expand for detailed server results**
+  - Color-coded visual indicators
+  - Compact 4-column server grid
 
 - ✅ **Dynamic Version Display**
   - Auto-updates from VERSION file

@@ -57,6 +57,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Enhanced WHOIS UI to conditionally show provider field (Brazilian domains only)
 - Expanded propagation display with 4 separate sections (one per record type)
+- **Redesigned propagation section with collapsible cards for better UX**
+  - Compact summary cards showing status at a glance
+  - Click-to-expand/collapse for detailed server results
+  - Reduced vertical scrolling by ~80%
+  - Improved visual hierarchy with prominent status badges
+  - 4-column compact server grid in expanded view
+  - Values section shown first with pill-style tags
+  - Animated chevron indicators for expand/collapse state
 - Updated /api/whois endpoint to include isSubdomain and rootDomain fields
 - Improved error messaging for missing record types
 - Updated /api/propagation to /api/propagation-all for multi-record support
