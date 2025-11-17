@@ -326,9 +326,98 @@
             </div>
         </div> <!-- End DNS Propagation Section  -->
 
+        <!-- SSL Certificate Section -->
+        <div id="sslResults" class="mt-8" style="display: none;">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-2">
+                SSL Certificate
+            </h3>
+
+            <!-- SSL Summary Card -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                <button class="w-full p-4 bg-gradient-to-r from-indigo-50 to-purple-100 hover:from-indigo-100 hover:to-purple-200 transition-colors text-left flex items-center justify-between" onclick="toggleSection('sslDetails')">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <span class="text-2xl">🔒</span>
+                        <span class="font-semibold text-gray-800">SSL/TLS Certificate</span>
+                        <span id="sslStatusBadge" class="px-3 py-1 text-xs font-medium rounded-full"></span>
+                        <span id="sslExpiryBadge" class="text-sm font-semibold"></span>
+                    </div>
+                    <svg id="sslChevron" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                
+                <div id="sslDetails" class="hidden border-t border-gray-200 bg-white">
+                    <div class="p-6 space-y-6">
+                        
+                        <!-- Certificate Info Grid -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            
+                            <!-- Issuer -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1 font-semibold">Issued By</p>
+                                <p id="sslIssuer" class="text-sm font-medium text-gray-900"></p>
+                            </div>
+                            
+                            <!-- Valid From -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1 font-semibold">Valid From</p>
+                                <p id="sslValidFrom" class="text-sm font-medium text-gray-900"></p>
+                            </div>
+                            
+                            <!-- Valid To -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1 font-semibold">Valid Until</p>
+                                <p id="sslValidTo" class="text-sm font-medium text-gray-900"></p>
+                            </div>
+                            
+                            <!-- Days Remaining -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1 font-semibold">Days Remaining</p>
+                                <p id="sslDaysRemaining" class="text-sm font-medium text-gray-900"></p>
+                            </div>
+                            
+                        </div>
+
+                        <!-- Subject Alternative Names -->
+                        <div id="sslSANContainer" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <p class="text-xs text-gray-700 font-semibold mb-2">Certificate Covers:</p>
+                            <div id="sslSANs" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Certificate Chain -->
+                        <div id="sslChainContainer" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <p class="text-xs text-gray-700 font-semibold mb-3">Certificate Chain:</p>
+                            <div id="sslChain" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Security Info -->
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <div id="sslSelfSignedBadge" class="text-center p-3 rounded-lg border"></div>
+                            <div id="sslWildcardBadge" class="text-center p-3 rounded-lg border"></div>
+                            <div id="sslTrustedBadge" class="text-center p-3 rounded-lg border"></div>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-indigo-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="ml-3">
+                                    <p class="text-xs text-indigo-800">
+                                        This shows basic SSL certificate information. For detailed security analysis, visit 
+                                        <a href="#" id="sslLabsLink" target="_blank" class="font-semibold underline hover:text-indigo-900">SSL Labs</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End SSL Certificate Section  -->
+
         </main>
-
-
 
         <!-- Footer -->
         <footer class="text-center text-white mt-10 py-5 opacity-90">

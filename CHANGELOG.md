@@ -10,10 +10,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- SSL Certificate Analysis (Stage 5)
 - Hosting Provider Detection (Stage 6)
 - CMS/Technology Detection (Stage 7)
 - Website Screenshots (Stage 8)
+
+---
+
+## [2.4.0] - November 16, 2025
+
+### Added
+- **SSL/TLS Certificate Analysis (Stage 5)**
+  - Certificate validity check (valid/invalid/self-signed)
+  - Expiration date with days remaining countdown
+  - Color-coded expiry warnings (red < 7 days, yellow < 30 days, green > 30 days)
+  - Certificate issuer information (CA organization and common name)
+  - Valid from/to date display
+  - Subject Alternative Names (SANs) - all domains covered by certificate
+  - Complete certificate chain visualization (leaf → intermediate → root)
+  - Wildcard certificate detection
+  - Self-signed certificate detection
+  - Browser trust validation
+  - Collapsible card UI matching propagation design
+  - SSL Labs integration link for detailed security analysis
+  - Graceful error handling for domains without SSL
+- **Backend SSL Module**
+  - New ssl.js module using Node.js TLS
+  - checkSSL() function for certificate retrieval
+  - Certificate chain parsing and validation
+  - Days remaining calculation
+  - SAN parsing and normalization
+  - Self-signed and wildcard detection
+
+### Changed
+- Updated performFullLookup to fetch SSL data in parallel with other checks
+- Enhanced hideAll() to include SSL section
+- Improved error handling to allow SSL failures without breaking other sections
+
+### Technical
+- Uses Node.js built-in `tls` module (no external dependencies)
+- Parallel API calls for WHOIS, DNS, Propagation, and SSL (faster results)
+- Certificate retrieval with 10-second timeout
+- Complete certificate chain traversal (up to 10 levels)
+- Supports both valid and invalid certificates for analysis
 
 ---
 
@@ -255,13 +293,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
-| 2.3.0   | Oct 25, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |
+| 2.4.0   | Nov 16, 2025  | Stage 5          | SSL/TLS Certificate Analysis             |
+| 2.3.0   | Oct 16, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |
 | 2.2.0   | Oct 16, 2025  | Stage 4          | DNS Propagation Checker                  |
 | 2.1.0   | Oct 15, 2025  | Stage 3          | DNS Records Query                        |
 | 2.0.0   | Oct 10, 2025  | Stage 2          | WHOIS Lookup + UI Improvements           |
 | 1.0.0   | Oct 05, 2025  | Stage 1          | Infrastructure & Hello World             |
 
----
 
 ## Versioning Guidelines
 

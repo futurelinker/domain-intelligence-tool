@@ -6,6 +6,7 @@ import { queryAllRecords } from './dns.js';
 import { checkPropagation, checkAllPropagation } from './propagation.js';
 import { isSubdomain, getRootDomain } from './utils.js';
 import { readFileSync } from 'fs'; 
+import { checkSSL } from './ssl.js';
 
 
 // Get __dirname equivalent in ES modules
@@ -183,6 +184,40 @@ app.post('/api/propagation-all', async (req, res) => {
   }
 });
 
+// SSL Certificate check endpoint
+app.post('/api/ssl', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+
+    console.log(`📥 SSL check request for: ${domain}`);
+
+    // Check SSL certificate
+    const sslData = await checkSSL(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: sslData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('SSL API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 // Serve index.html for root route
 app.get('/', (req, res) => {

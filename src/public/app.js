@@ -7,6 +7,7 @@ const errorMessage = document.getElementById('errorMessage');
 const results = document.getElementById('results');
 const dnsResults = document.getElementById('dnsResults');
 const propagationResults = document.getElementById('propagationResults');
+const sslResults = document.getElementById('sslResults');
 
 // Lookup button click handler
 lookupBtn.addEventListener('click', async () => {
@@ -62,7 +63,7 @@ async function performFullLookup(domain) {
 
   try {
     // Call all three APIs in parallel
-    const [whoisResponse, dnsResponse, propagationResponse] = await Promise.all([
+    const [whoisResponse, dnsResponse, propagationResponse, sslResponse] = await Promise.all([
       fetch('/api/whois', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,12 +78,18 @@ async function performFullLookup(domain) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
+      }),
+      fetch('/api/ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
       })
     ]);
 
     const whoisData = await whoisResponse.json();
     const dnsData = await dnsResponse.json();
     const propagationData = await propagationResponse.json();
+    const sslData = await sslResponse.json();
 
     // Check for errors
     if (!whoisResponse.ok || !whoisData.success) {
@@ -96,11 +103,17 @@ async function performFullLookup(domain) {
     if (!propagationResponse.ok || !propagationData.success) {
       throw new Error(propagationData.error || 'Propagation check failed');
     }
+    // SSL is optional - don't throw error if it fails
+    if (!sslResponse.ok || !sslData.success) {
+      console.warn('SSL check failed:', sslData.error);
+      // We'll handle this gracefully in displaySSLResults
+    }
 
     // Display all results
     displayWhoisResults(whoisData.data);
     displayDnsResults(dnsData.data);
     displayPropagationResults(propagationData.data);
+    displaySSLResults(sslData); // Note: passing entire sslData, not just .data
 
 // For subdomains: Force DNS and Propagation to be visible
     if (whoisData.data.isSubdomain) {
@@ -475,6 +488,7 @@ function hideAll() {
   results.classList.add('hidden');
   dnsResults.classList.add('hidden');
   propagationResults.classList.add('hidden');
+  sslResults.style.display = 'none';
   document.getElementById('subdomainBanner').classList.add('hidden');
 }
 
@@ -490,6 +504,134 @@ function toggleSection(sectionId) {
     section.classList.add('hidden');
     chevron.classList.remove('rotate-180');
   }
+}
+
+// Display SSL Certificate results
+function displaySSLResults(response) {
+  // Handle SSL check failure
+  if (!response.success) {
+    console.log('SSL not available:', response.error);
+    sslResults.style.display = 'none';
+    return;
+  }
+
+  const data = response.data;
+
+  // Status badge
+  const statusBadge = document.getElementById('sslStatusBadge');
+  if (data.valid) {
+    statusBadge.textContent = '✓ Valid & Trusted';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
+  } else if (data.selfSigned) {
+    statusBadge.textContent = '⚠ Self-Signed';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
+  } else {
+    statusBadge.textContent = '✗ Invalid';
+    statusBadge.className = 'px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800';
+  }
+
+  // Expiry badge with color coding
+  const expiryBadge = document.getElementById('sslExpiryBadge');
+  const days = data.daysRemaining;
+  
+  if (days < 0) {
+    expiryBadge.innerHTML = '<span class="text-red-600">⚠ Expired!</span>';
+  } else if (days <= 7) {
+    expiryBadge.innerHTML = `<span class="text-red-600">⚠ Expires in ${days} days</span>`;
+  } else if (days <= 30) {
+    expiryBadge.innerHTML = `<span class="text-yellow-600">⏰ Expires in ${days} days</span>`;
+  } else {
+    expiryBadge.innerHTML = `<span class="text-green-600">✓ Expires in ${days} days</span>`;
+  }
+
+  // Certificate details
+  document.getElementById('sslIssuer').textContent = 
+    `${data.issuer.organization} (${data.issuer.commonName})`;
+  
+  document.getElementById('sslValidFrom').textContent = 
+    new Date(data.validFrom).toLocaleDateString('en-US', { 
+      year: 'numeric', month: 'long', day: 'numeric' 
+    });
+  
+  document.getElementById('sslValidTo').textContent = 
+    new Date(data.validTo).toLocaleDateString('en-US', { 
+      year: 'numeric', month: 'long', day: 'numeric' 
+    });
+  
+  document.getElementById('sslDaysRemaining').textContent = 
+    days >= 0 ? `${days} days` : 'Expired';
+
+  // Subject Alternative Names
+  const sansDiv = document.getElementById('sslSANs');
+  sansDiv.innerHTML = '';
+  
+  if (data.subjectAltNames && data.subjectAltNames.length > 0) {
+    data.subjectAltNames.forEach(san => {
+      const badge = document.createElement('span');
+      badge.className = 'bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium';
+      badge.textContent = san;
+      sansDiv.appendChild(badge);
+    });
+  } else {
+    sansDiv.innerHTML = '<span class="text-gray-500 text-sm">No alternative names</span>';
+  }
+
+  // Certificate Chain
+  const chainDiv = document.getElementById('sslChain');
+  chainDiv.innerHTML = '';
+  
+  if (data.chain && data.chain.length > 0) {
+    data.chain.forEach((cert, index) => {
+      const chainItem = document.createElement('div');
+      chainItem.className = 'flex items-start space-x-2 text-sm';
+      
+      const indent = '└─ '.repeat(index);
+      const icon = index === 0 ? '🔐' : (index === data.chain.length - 1 ? '🏛️' : '🔗');
+      
+      chainItem.innerHTML = `
+        <span class="text-gray-400 font-mono">${indent}</span>
+        <span>${icon}</span>
+        <span class="text-gray-700">${escapeHtml(cert.commonName)}</span>
+      `;
+      
+      chainDiv.appendChild(chainItem);
+    });
+  }
+
+  // Security badges
+  const selfSignedBadge = document.getElementById('sslSelfSignedBadge');
+  if (data.selfSigned) {
+    selfSignedBadge.className = 'text-center p-3 rounded-lg border border-yellow-300 bg-yellow-50';
+    selfSignedBadge.innerHTML = '<p class="text-xs font-semibold text-yellow-800">⚠ Self-Signed</p>';
+  } else {
+    selfSignedBadge.className = 'text-center p-3 rounded-lg border border-green-300 bg-green-50';
+    selfSignedBadge.innerHTML = '<p class="text-xs font-semibold text-green-800">✓ CA Signed</p>';
+  }
+
+  const wildcardBadge = document.getElementById('sslWildcardBadge');
+  if (data.wildcard) {
+    wildcardBadge.className = 'text-center p-3 rounded-lg border border-blue-300 bg-blue-50';
+    wildcardBadge.innerHTML = '<p class="text-xs font-semibold text-blue-800">✓ Wildcard</p>';
+  } else {
+    wildcardBadge.className = 'text-center p-3 rounded-lg border border-gray-300 bg-gray-50';
+    wildcardBadge.innerHTML = '<p class="text-xs font-semibold text-gray-600">Single Domain</p>';
+  }
+
+  const trustedBadge = document.getElementById('sslTrustedBadge');
+  if (data.valid) {
+    trustedBadge.className = 'text-center p-3 rounded-lg border border-green-300 bg-green-50';
+    trustedBadge.innerHTML = '<p class="text-xs font-semibold text-green-800">✓ Trusted</p>';
+  } else {
+    trustedBadge.className = 'text-center p-3 rounded-lg border border-red-300 bg-red-50';
+    trustedBadge.innerHTML = '<p class="text-xs font-semibold text-red-800">✗ Not Trusted</p>';
+  }
+
+  // SSL Labs link
+  document.getElementById('sslLabsLink').href = 
+    `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(data.domain)}`;
+
+  // Show SSL results
+  sslResults.style.display = 'block';
 }
 
 // Load version on page load

@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,7 +16,8 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.3.0)
+### Current Features (v2.4.0)
+
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -49,6 +50,16 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - Auto-updates from VERSION file
   - Single source of truth
 
+  - ✅ **SSL/TLS Certificate Analysis**
+  - Certificate validity and trust status
+  - Expiration tracking with color-coded warnings
+  - Certificate issuer (CA) information
+  - Subject Alternative Names (all covered domains)
+  - Complete certificate chain visualization
+  - Wildcard and self-signed detection
+  - Integration with SSL Labs for deep analysis
+  - Fast results using Node.js TLS module
+
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
   - 2-3 column responsive grid layout
@@ -59,7 +70,6 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ### Planned Features (Roadmap)
 
-- **Stage 5:** SSL Certificate Deep Analysis
 - **Stage 6:** Hosting Provider Detection
 - **Stage 7:** CMS/Technology Detection
 - **Stage 8:** Website Screenshots
@@ -205,6 +215,6 @@ Upcoming Features
  Stage 8: Website Screenshots
 
 
-**Last Updated:** October 25, 2025
-**Version: 2.3.0**
-**Status:** Production (Improvements Release Complete)
+**Last Updated:** November 16, 2025
+**Version: 2.4.0**
+**Status:** Production (Stage 5 Complete - SSL Certificate Analysis)
