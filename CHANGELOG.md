@@ -10,9 +10,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Hosting Provider Detection (Stage 6)
 - CMS/Technology Detection (Stage 7)
 - Website Screenshots (Stage 8)
+- Performance Metrics (Stage 9)
+- Security Headers (Stage 10)
+
+---
+
+### Added
+- **Hosting Provider Detection (Stage 6)**
+  - Automatic detection of 20+ major hosting providers
+  - Cloud providers: AWS, Google Cloud, Azure, DigitalOcean, Linode, Vultr, Hetzner, OVH
+  - CDN providers: Cloudflare, Fastly, Akamai, BunnyCDN, StackPath
+  - Hosting companies: GoDaddy, Bluehost, HostGator, DreamHost, SiteGround, Namecheap
+  - Modern platforms: Vercel, Netlify
+  - IP geolocation with country, region, city, timezone
+  - ASN (Autonomous System Number) lookup and display
+  - Organization and ISP information
+  - Network provider classification (cloud/cdn/hosting/platform/other)
+  - Geographic location with country flag emoji
+  - Cloud hosting detection badge
+  - CDN usage detection badge
+  - Collapsible card UI with monochromatic blue design
+  - Integration with ip-api.com for geolocation data
+
+### Changed
+- Updated performFullLookup to fetch hosting data in parallel (5 API calls)
+- Enhanced hideAll() to use inline styles for consistent section hiding
+- Unified UI design with monochromatic blue backgrounds across all sections
+- Standardized percentage text colors to blue for cleaner look
+
+### Fixed
+- DNS Propagation section staying visible on subsequent lookups
+- Section hiding inconsistency between first and subsequent queries
+- Inline style priority over CSS classes for reliable show/hide
+
+### Technical
+- New hosting.js module for provider detection
+- detectHosting() function with IP resolution and geolocation
+- detectProvider() with pattern matching for 20+ providers
+- getIPInfo() integration with ip-api.com API
+- ASN extraction and parsing
+- Country flag emoji generation from country codes
+- Provider type classification system
 
 ---
 
@@ -293,6 +333,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.5.0   | Nov 19, 2025  | Stage 6          | Hosting Provider Detection               |
 | 2.4.0   | Nov 16, 2025  | Stage 5          | SSL/TLS Certificate Analysis             |
 | 2.3.0   | Oct 16, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |
 | 2.2.0   | Oct 16, 2025  | Stage 4          | DNS Propagation Checker                  |

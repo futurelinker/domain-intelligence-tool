@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,8 +16,7 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.4.0)
-
+### Current Features (v2.5.0)
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -59,6 +58,27 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - Wildcard and self-signed detection
   - Integration with SSL Labs for deep analysis
   - Fast results using Node.js TLS module
+
+- ✅ **SSL/TLS Certificate Analysis**
+  - Certificate validity and trust status
+  - Expiration tracking with color-coded warnings
+  - Certificate issuer (CA) information
+  - Subject Alternative Names (all covered domains)
+  - Complete certificate chain visualization
+  - Wildcard and self-signed detection
+  - Integration with SSL Labs for deep analysis
+  - Fast results using Node.js TLS module
+
+    - ✅ **Hosting Provider Detection**
+  - Automatic detection of 20+ major providers
+  - Cloud platforms (AWS, GCP, Azure, DigitalOcean, etc.)
+  - CDN services (Cloudflare, Fastly, Akamai, BunnyCDN, etc.)
+  - Traditional hosting (GoDaddy, Bluehost, etc.)
+  - Modern platforms (Vercel, Netlify)
+  - IP geolocation (country, region, city, timezone)
+  - ASN and organization information
+  - Cloud and CDN detection badges
+  - Network provider classification
 
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
@@ -215,6 +235,6 @@ Upcoming Features
  Stage 8: Website Screenshots
 
 
-**Last Updated:** November 16, 2025
-**Version: 2.4.0**
-**Status:** Production (Stage 5 Complete - SSL Certificate Analysis)
+**Last Updated:** November 19, 2025
+**Version: 2.5.0**
+**Status:** Production (Stage 6 Complete - Hosting Provider Detection)

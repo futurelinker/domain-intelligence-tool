@@ -7,6 +7,7 @@ import { checkPropagation, checkAllPropagation } from './propagation.js';
 import { isSubdomain, getRootDomain } from './utils.js';
 import { readFileSync } from 'fs'; 
 import { checkSSL } from './ssl.js';
+import { detectHosting } from './hosting.js';
 
 
 // Get __dirname equivalent in ES modules
@@ -211,6 +212,41 @@ app.post('/api/ssl', async (req, res) => {
 
   } catch (error) {
     console.error('SSL API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Hosting provider detection endpoint
+app.post('/api/hosting', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+
+    console.log(`📥 Hosting detection request for: ${domain}`);
+
+    // Detect hosting provider
+    const hostingData = await detectHosting(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: hostingData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Hosting API error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

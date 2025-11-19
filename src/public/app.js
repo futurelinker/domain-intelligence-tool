@@ -8,6 +8,7 @@ const results = document.getElementById('results');
 const dnsResults = document.getElementById('dnsResults');
 const propagationResults = document.getElementById('propagationResults');
 const sslResults = document.getElementById('sslResults');
+const hostingResults = document.getElementById('hostingResults');
 
 // Lookup button click handler
 lookupBtn.addEventListener('click', async () => {
@@ -63,7 +64,7 @@ async function performFullLookup(domain) {
 
   try {
     // Call all three APIs in parallel
-    const [whoisResponse, dnsResponse, propagationResponse, sslResponse] = await Promise.all([
+    const [whoisResponse, dnsResponse, propagationResponse, sslResponse, hostingResponse] = await Promise.all([
       fetch('/api/whois', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,6 +84,11 @@ async function performFullLookup(domain) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
+      }),
+      fetch('/api/hosting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
       })
     ]);
 
@@ -90,6 +96,8 @@ async function performFullLookup(domain) {
     const dnsData = await dnsResponse.json();
     const propagationData = await propagationResponse.json();
     const sslData = await sslResponse.json();
+    const hostingData = await hostingResponse.json();
+
 
     // Check for errors
     if (!whoisResponse.ok || !whoisData.success) {
@@ -109,11 +117,17 @@ async function performFullLookup(domain) {
       // We'll handle this gracefully in displaySSLResults
     }
 
+     // Hosting is optional - don't throw error if it fails
+    if (!hostingResponse.ok || !hostingData.success) {
+      console.warn('Hosting detection failed:', hostingData.error);
+    }
+
     // Display all results
     displayWhoisResults(whoisData.data);
     displayDnsResults(dnsData.data);
     displayPropagationResults(propagationData.data);
     displaySSLResults(sslData); // Note: passing entire sslData, not just .data
+    displayHostingResults(hostingData);
 
 // For subdomains: Force DNS and Propagation to be visible
     if (whoisData.data.isSubdomain) {
@@ -486,9 +500,10 @@ function showError(message) {
 function hideAll() {
   error.classList.add('hidden');
   results.classList.add('hidden');
-  dnsResults.classList.add('hidden');
-  propagationResults.classList.add('hidden');
+  dnsResults.style.display = 'none';  // ← Changed
+  propagationResults.style.display = 'none';  // ← Changed
   sslResults.style.display = 'none';
+  hostingResults.style.display = 'none';
   document.getElementById('subdomainBanner').classList.add('hidden');
 }
 
@@ -697,6 +712,97 @@ function displaySSLResults(response) {
 
   // Show SSL results
   sslResults.style.display = 'block';
+}
+
+// Display Hosting Provider results
+function displayHostingResults(response) {
+  // Handle hosting detection failure
+  if (!response.success) {
+    console.log('Hosting not available:', response.error);
+    hostingResults.style.display = 'none';
+    return;
+  }
+
+  const data = response.data;
+
+  // Provider icon
+  document.getElementById('hostingIcon').textContent = data.provider.icon;
+
+  // Provider badge
+  document.getElementById('hostingProviderBadge').textContent = data.provider.name;
+
+  // Type badge
+  const typeBadge = document.getElementById('hostingTypeBadge');
+  if (data.provider.type === 'cloud') {
+    typeBadge.textContent = 'Cloud';
+    typeBadge.className = 'px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800';
+  } else if (data.provider.type === 'cdn') {
+    typeBadge.textContent = 'CDN';
+    typeBadge.className = 'px-2 py-1 text-xs font-medium rounded bg-purple-100 text-purple-800';
+  } else if (data.provider.type === 'hosting') {
+    typeBadge.textContent = 'Hosting';
+    typeBadge.className = 'px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-800';
+  } else if (data.provider.type === 'platform') {
+    typeBadge.textContent = 'Platform';
+    typeBadge.className = 'px-2 py-1 text-xs font-medium rounded bg-indigo-100 text-indigo-800';
+  } else {
+    typeBadge.textContent = 'Network';
+    typeBadge.className = 'px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800';
+  }
+
+  // Network details
+  document.getElementById('hostingIP').textContent = data.ipAddress;
+  document.getElementById('hostingProvider').textContent = data.provider.name;
+  document.getElementById('hostingASN').textContent = data.network.asn || 'Unknown';
+  document.getElementById('hostingOrg').textContent = data.network.organization;
+  document.getElementById('hostingISP').textContent = data.network.isp || data.network.organization;
+  
+  // Location
+  const countryFlag = data.location.countryCode ? getCountryFlag(data.location.countryCode) : '🌍';
+  document.getElementById('hostingCountry').textContent = 
+    `${countryFlag} ${data.location.country}`;
+  
+  document.getElementById('hostingRegion').textContent = 
+    data.location.region || 'Unknown';
+  
+  document.getElementById('hostingCity').textContent = 
+    data.location.city || 'Unknown';
+  
+  document.getElementById('hostingTimezone').textContent = 
+    data.location.timezone || 'Unknown';
+
+  // Cloud badge
+  const cloudBadge = document.getElementById('hostingCloudBadge');
+  if (data.isCloud) {
+    cloudBadge.className = 'text-center p-3 rounded-lg border border-blue-300 bg-blue-50';
+    cloudBadge.innerHTML = '<p class="text-xs font-semibold text-blue-800">☁️ Cloud Hosted</p>';
+  } else {
+    cloudBadge.className = 'text-center p-3 rounded-lg border border-gray-300 bg-gray-50';
+    cloudBadge.innerHTML = '<p class="text-xs font-semibold text-gray-600">Traditional Hosting</p>';
+  }
+
+  // CDN badge
+  const cdnBadge = document.getElementById('hostingCDNBadge');
+  if (data.isCDN) {
+    cdnBadge.className = 'text-center p-3 rounded-lg border border-purple-300 bg-purple-50';
+    cdnBadge.innerHTML = '<p class="text-xs font-semibold text-purple-800">🛡️ CDN Enabled</p>';
+  } else {
+    cdnBadge.className = 'text-center p-3 rounded-lg border border-gray-300 bg-gray-50';
+    cdnBadge.innerHTML = '<p class="text-xs font-semibold text-gray-600">Direct Connection</p>';
+  }
+
+  // Show hosting results
+  hostingResults.style.display = 'block';
+}
+
+// Helper: Get country flag emoji
+function getCountryFlag(countryCode) {
+  if (!countryCode || countryCode.length !== 2) return '🌍';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
 }
 
 // Load version on page load
