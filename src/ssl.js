@@ -1,4 +1,39 @@
 import tls from 'tls';
+import https from 'https';
+
+ /**
+ * Get server type from HTTPS response headers
+ * @param {string} domain - Domain name
+ * @returns {Promise<string>} - Server type
+ */
+function getServerType(domain) {
+  return new Promise((resolve) => {
+    const options = {
+      hostname: domain,
+      port: 443,
+      path: '/',
+      method: 'HEAD',
+      timeout: 5000,
+      rejectUnauthorized: false
+    };
+
+    const req = https.request(options, (res) => {
+      const server = res.headers['server'] || res.headers['Server'] || 'Unknown';
+      resolve(server);
+    });
+
+    req.on('error', () => {
+      resolve('Unknown');
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      resolve('Unknown');
+    });
+
+    req.end();
+  });
+}
 
 /**
  * Check SSL certificate for a domain
@@ -6,6 +41,22 @@ import tls from 'tls';
  * @returns {Promise<Object>} - SSL certificate information
  */
 export async function checkSSL(domain) {
+    // First, resolve domain to IP
+  const dns = await import('dns/promises');
+  let ipAddresses = [];
+  
+  try {
+    const addresses = await dns.resolve4(domain);
+    ipAddresses = addresses;
+  } catch (err) {
+    console.log(`Could not resolve IPv4 for ${domain}, trying IPv6...`);
+    try {
+      const addresses = await dns.resolve6(domain);
+      ipAddresses = addresses;
+    } catch (err2) {
+      console.log(`Could not resolve IP for ${domain}`);
+    }
+  }
   return new Promise((resolve, reject) => {
     console.log(`🔒 Checking SSL certificate for: ${domain}`);
 
@@ -25,6 +76,7 @@ export async function checkSSL(domain) {
         const result = {
           domain: domain,
           valid: authorized,
+          ipAddresses: ipAddresses, 
           
           // Basic info
           issuer: {
@@ -52,15 +104,25 @@ export async function checkSSL(domain) {
           // Certificate chain
           chain: buildCertificateChain(cert),
           
-          // Security flags
+// Security flags
           selfSigned: !authorized && cert.issuer?.CN === cert.subject?.CN,
           wildcard: isWildcard(cert.subject?.CN, cert.subjectaltname)
         };
 
         socket.end();
         
-        console.log(`✅ SSL check complete for ${domain}: ${result.valid ? 'Valid' : 'Invalid'} - ${result.daysRemaining} days remaining`);
-        resolve(result);
+        // Get server type before resolving
+        getServerType(domain)
+          .then(serverType => {
+            result.serverType = serverType;
+            console.log(`✅ SSL check complete for ${domain}: ${result.valid ? 'Valid' : 'Invalid'} - ${result.daysRemaining} days remaining - Server: ${serverType}`);
+            resolve(result);
+          })
+          .catch(() => {
+            result.serverType = 'Unknown';
+            console.log(`✅ SSL check complete for ${domain}: ${result.valid ? 'Valid' : 'Invalid'} - ${result.daysRemaining} days remaining - Server: Unknown`);
+            resolve(result);
+          });
 
       } catch (error) {
         socket.end();
@@ -91,6 +153,7 @@ export async function checkSSL(domain) {
     });
   });
 }
+//  End of checkSSL function
 
 /**
  * Calculate days remaining until certificate expires
@@ -120,23 +183,32 @@ function parseSubjectAltNames(subjectaltname) {
 }
 
 /**
- * Build certificate chain information
+ * Build certificate chain information with more details
  * @param {Object} cert - Certificate object
- * @returns {Array} - Certificate chain
+ * @returns {Array} - Certificate chain with enhanced info
  */
 function buildCertificateChain(cert) {
   const chain = [];
   let current = cert;
+  let depth = 0;
   
   while (current) {
+    const daysRemaining = getDaysRemaining(current.valid_to);
+    const isExpired = daysRemaining < 0;
+    
     chain.push({
       commonName: current.subject?.CN || 'Unknown',
+      organization: current.subject?.O || current.issuer?.O || null,
       issuer: current.issuer?.CN || 'Unknown',
       validFrom: current.valid_from,
-      validTo: current.valid_to
+      validTo: current.valid_to,
+      daysRemaining: daysRemaining,
+      expired: isExpired,
+      type: depth === 0 ? 'leaf' : (chain.length > 1 && !current.issuerCertificate ? 'root' : 'intermediate')
     });
     
     current = current.issuerCertificate;
+    depth++;
     
     // Prevent infinite loop (self-signed at root)
     if (current && current.fingerprint === cert.fingerprint) {
@@ -151,6 +223,7 @@ function buildCertificateChain(cert) {
   
   return chain;
 }
+// End of buildCertificateChain
 
 /**
  * Check if certificate is a wildcard certificate
@@ -168,4 +241,6 @@ function isWildcard(commonName, subjectaltname) {
   }
   
   return false;
+
+ 
 }

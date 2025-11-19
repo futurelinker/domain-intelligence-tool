@@ -544,6 +544,24 @@ function displaySSLResults(response) {
     expiryBadge.innerHTML = `<span class="text-green-600">✓ Expires in ${days} days</span>`;
   }
 
+    // IP Address
+  const ipElement = document.getElementById('sslIPAddress');
+  if (data.ipAddresses && data.ipAddresses.length > 0) {
+    ipElement.textContent = data.ipAddresses.join(', ');
+  } else {
+    ipElement.textContent = 'Not resolved';
+    ipElement.className = 'text-sm font-medium text-gray-500 font-mono';
+  }
+
+  // Server Type
+  const serverElement = document.getElementById('sslServerType');
+  if (data.serverType && data.serverType !== 'Unknown') {
+    serverElement.textContent = data.serverType;
+  } else {
+    serverElement.textContent = 'Unknown';
+    serverElement.className = 'text-sm font-medium text-gray-500';
+  }
+
   // Certificate details
   document.getElementById('sslIssuer').textContent = 
     `${data.issuer.organization} (${data.issuer.commonName})`;
@@ -576,26 +594,73 @@ function displaySSLResults(response) {
     sansDiv.innerHTML = '<span class="text-gray-500 text-sm">No alternative names</span>';
   }
 
-  // Certificate Chain
+// Certificate Chain
   const chainDiv = document.getElementById('sslChain');
+  const chainCountElement = document.getElementById('sslChainCount');
   chainDiv.innerHTML = '';
   
   if (data.chain && data.chain.length > 0) {
+    chainCountElement.textContent = `${data.chain.length} certificate${data.chain.length > 1 ? 's' : ''}`;
+    
     data.chain.forEach((cert, index) => {
       const chainItem = document.createElement('div');
-      chainItem.className = 'flex items-start space-x-2 text-sm';
       
-      const indent = '└─ '.repeat(index);
-      const icon = index === 0 ? '🔐' : (index === data.chain.length - 1 ? '🏛️' : '🔗');
+      // Determine type and styling
+      let bgColor = 'bg-white';
+      let borderColor = 'border-gray-300';
+      let icon = '🔗';
+      let typeLabel = 'Intermediate';
+      
+      if (cert.type === 'leaf') {
+        bgColor = 'bg-blue-50';
+        borderColor = 'border-blue-300';
+        icon = '🔐';
+        typeLabel = 'End Entity';
+      } else if (cert.type === 'root') {
+        bgColor = 'bg-green-50';
+        borderColor = 'border-green-300';
+        icon = '🏛️';
+        typeLabel = 'Root CA';
+      }
+      
+      chainItem.className = `${bgColor} border ${borderColor} rounded-lg p-3`;
+      
+      // Expiry status
+      let expiryColor = 'text-green-600';
+      let expiryText = `${cert.daysRemaining} days`;
+      
+      if (cert.expired) {
+        expiryColor = 'text-red-600';
+        expiryText = 'Expired';
+      } else if (cert.daysRemaining < 30) {
+        expiryColor = 'text-yellow-600';
+      }
       
       chainItem.innerHTML = `
-        <span class="text-gray-400 font-mono">${indent}</span>
-        <span>${icon}</span>
-        <span class="text-gray-700">${escapeHtml(cert.commonName)}</span>
+        <div class="flex items-start justify-between">
+          <div class="flex items-start space-x-2 flex-1">
+            <span class="text-xl">${icon}</span>
+            <div class="flex-1">
+              <div class="flex items-center space-x-2">
+                <p class="text-sm font-semibold text-gray-900">${escapeHtml(cert.commonName)}</p>
+                <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">${typeLabel}</span>
+              </div>
+              ${cert.organization ? `<p class="text-xs text-gray-600 mt-1">${escapeHtml(cert.organization)}</p>` : ''}
+              <p class="text-xs text-gray-500 mt-1">Issued by: ${escapeHtml(cert.issuer)}</p>
+            </div>
+          </div>
+          <div class="text-right ml-4">
+            <p class="text-xs ${expiryColor} font-semibold">${expiryText}</p>
+            <p class="text-xs text-gray-500">${new Date(cert.validTo).toLocaleDateString()}</p>
+          </div>
+        </div>
       `;
       
       chainDiv.appendChild(chainItem);
     });
+  } else {
+    chainCountElement.textContent = 'Unknown';
+    chainDiv.innerHTML = '<p class="text-sm text-gray-500">Chain information not available</p>';
   }
 
   // Security badges
