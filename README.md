@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,7 +16,7 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.5.0)
+### Current Features (v2.6.0)
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -69,7 +69,7 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - Integration with SSL Labs for deep analysis
   - Fast results using Node.js TLS module
 
-    - ✅ **Hosting Provider Detection**
+- ✅ **Hosting Provider Detection**
   - Automatic detection of 20+ major providers
   - Cloud platforms (AWS, GCP, Azure, DigitalOcean, etc.)
   - CDN services (Cloudflare, Fastly, Akamai, BunnyCDN, etc.)
@@ -79,6 +79,18 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - ASN and organization information
   - Cloud and CDN detection badges
   - Network provider classification
+
+- ✅ **CMS/Technology Detection**
+  - Automatic detection of 40+ technologies
+  - CMS platforms (WordPress, Drupal, Joomla, Shopify, Wix, etc.)
+  - Frontend frameworks (React, Vue, Angular, Next.js, Nuxt, Svelte)
+  - Backend technologies (PHP, Node.js, Python, Ruby, ASP.NET)
+  - Web servers (nginx, Apache, IIS, LiteSpeed)
+  - JavaScript libraries (jQuery, Bootstrap, Tailwind CSS)
+  - Analytics tools (Google Analytics, Tag Manager, Facebook Pixel)
+  - E-commerce platforms (WooCommerce, Magento, PrestaShop)
+  - Confidence level indicators (high/medium/low)
+  - Grouped by technology category
 
 - ✅ **Professional UI**
   - Tailwind CSS responsive design
@@ -236,5 +248,5 @@ Upcoming Features
 
 
 **Last Updated:** November 19, 2025
-**Version: 2.5.0**
-**Status:** Production (Stage 6 Complete - Hosting Provider Detection)
+**Version: 2.6.0**
+**Status:** Production (Stage 7 Complete - CMS/Technology Detection)

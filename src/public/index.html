@@ -542,6 +542,110 @@
         </div> 
         <!-- End Hosting Provider Section  -->
 
+        <!-- Technology Detection Section -->
+        <div id="technologyResults" class="mt-8" style="display: none;">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-2">
+                Technologies Detected
+            </h3>
+
+            <!-- Technology Summary Card -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                <button class="w-full p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-colors text-left flex items-center justify-between" onclick="toggleSection('technologyDetails')">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <span class="text-2xl">🔍</span>
+                        <span class="font-semibold text-gray-800">Website Technologies</span>
+                        <span id="technologyCount" class="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800"></span>
+                    </div>
+                    <svg id="technologyChevron" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                
+                <div id="technologyDetails" class="hidden border-t border-gray-200 bg-white">
+                    <div class="p-6 space-y-6">
+                        
+                        <!-- CMS -->
+                        <div id="techCMSSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">📝 Content Management System</span>
+                            </div>
+                            <div id="techCMS" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Frontend Frameworks -->
+                        <div id="techFrontendSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">⚛️ Frontend Framework</span>
+                            </div>
+                            <div id="techFrontend" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Backend -->
+                        <div id="techBackendSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">🔧 Backend Technology</span>
+                            </div>
+                            <div id="techBackend" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Web Server -->
+                        <div id="techServerSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">🖥️ Web Server</span>
+                            </div>
+                            <div id="techServer" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Libraries -->
+                        <div id="techLibrariesSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">📚 JavaScript Libraries</span>
+                            </div>
+                            <div id="techLibraries" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Analytics -->
+                        <div id="techAnalyticsSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">📊 Analytics & Marketing</span>
+                            </div>
+                            <div id="techAnalytics" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- E-commerce -->
+                        <div id="techEcommerceSection" class="hidden">
+                            <div class="flex items-center mb-3">
+                                <span class="text-lg font-semibold text-gray-800">🛒 E-commerce</span>
+                            </div>
+                            <div id="techEcommerce" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- No technologies found message -->
+                        <div id="techNone" class="hidden text-center py-8">
+                            <p class="text-gray-500">No specific technologies detected</p>
+                            <p class="text-sm text-gray-400 mt-2">The website may use custom technologies or detection was limited</p>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="bg-gray-50 border-l-4 border-gray-400 p-4 rounded mt-6">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-gray-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="ml-3">
+                                    <p class="text-xs text-gray-700">
+                                        Technology detection is based on publicly visible HTML, headers, and scripts. 
+                                        Some technologies may not be detected if they're not visible in the page source.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </main>
 
         <!-- Footer -->

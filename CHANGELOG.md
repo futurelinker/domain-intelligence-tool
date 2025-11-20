@@ -10,12 +10,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- CMS/Technology Detection (Stage 7)
 - Website Screenshots (Stage 8)
 - Performance Metrics (Stage 9)
-- Security Headers (Stage 10)
+- Security Headers Analysis (Stage 10)
 
 ---
+
+## [2.6.0] - November 19, 2025
+
+### Added
+- **CMS/Technology Detection (Stage 7)**
+  - Automatic detection of 40+ technologies across 7 categories
+  - **CMS Detection:** WordPress, Drupal, Joomla, Shopify, Wix, Squarespace, Webflow, Ghost
+  - **Frontend Frameworks:** React, Next.js, Vue.js, Nuxt.js, Angular, Svelte
+  - **Backend Technologies:** PHP, Node.js, ASP.NET, Python (Django/Flask), Ruby on Rails
+  - **Web Servers:** nginx, Apache, Microsoft IIS, LiteSpeed, Cloudflare
+  - **JavaScript Libraries:** jQuery, Bootstrap, Tailwind CSS, Font Awesome
+  - **Analytics & Marketing:** Google Analytics, Google Tag Manager, Facebook Pixel, Hotjar
+  - **E-commerce Platforms:** WooCommerce, Magento, PrestaShop
+  - Confidence levels for each detection (high/medium/low)
+  - Technologies grouped by category with icons
+  - Color-coded confidence badges
+  - HTML content analysis (meta tags, comments, script sources)
+  - HTTP header inspection for technology signatures
+  - URL pattern matching for framework detection
+  - Collapsible card UI with monochromatic blue design
+
+### Changed
+- Enhanced domain input cleaning to handle URLs with protocols, paths, query strings, ports, and fragments
+- Update input field to show cleaned domain immediately after submission
+- Improved domain validation across all API endpoints
+- Extended Promise.all to 6 parallel API calls for comprehensive data gathering
+
+### Fixed
+- Domain input now properly strips trailing slashes (e.g., `wix.com/` → `wix.com`)
+- All API endpoints now receive properly cleaned domain names
+- DNS, SSL, Hosting, and Technology endpoints no longer fail with malformed domains
+- Input field displays cleaned domain for better user feedback
+
+### Technical
+- New technology.js module for technology detection
+- detectTechnologies() function with comprehensive signature matching
+- fetchWebsite() for HTML and header retrieval with 100KB limit
+- Pattern matching for 40+ technology signatures
+- Category-based detection: detectCMS(), detectFrontend(), detectBackend(), detectServer(), detectLibraries(), detectAnalytics(), detectEcommerce()
+- HTTP/HTTPS fallback mechanism for unreachable domains
+- Frontend domain cleaning with regex patterns for all URL components
+- Input field synchronization with cleaned domain values
+
+---
+
+
+## [2.5.0] - November 19, 2025
 
 ### Added
 - **Hosting Provider Detection (Stage 6)**
@@ -333,6 +379,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.6.0   | Nov 19, 2025  | Stage 7          | CMS/Technology Detection                 |
 | 2.5.0   | Nov 19, 2025  | Stage 6          | Hosting Provider Detection               |
 | 2.4.0   | Nov 16, 2025  | Stage 5          | SSL/TLS Certificate Analysis             |
 | 2.3.0   | Oct 16, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |

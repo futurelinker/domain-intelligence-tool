@@ -1,9 +1,9 @@
 import * as whoiser from 'whoiser';
 
 // DEBUG: See what whoiser exports
-console.log('whoiser object:', whoiser);
-console.log('whoiser keys:', Object.keys(whoiser));
-console.log('Type of whoiser:', typeof whoiser);
+// console.log('whoiser object:', whoiser);
+// console.log('whoiser keys:', Object.keys(whoiser));
+// console.log('Type of whoiser:', typeof whoiser);
 
 /**
  * Lookup WHOIS information for a domain
@@ -78,12 +78,17 @@ function getRegistrar(raw) {
 
 export async function lookupDomain(domain) {
   try {
-    // Remove http://, https://, www. if present
+    // Remove http://, https://, www., paths, query strings, etc.
     const cleanDomain = domain
-      .replace(/^https?:\/\//, '')
-      .replace(/^www\./, '')
+      .toLowerCase()
       .trim()
-      .toLowerCase();
+      .replace(/^https?:\/\//, '')   // Remove protocol
+      .replace(/^www\./, '')         // Remove www
+      .replace(/:\d+/, '')           // Remove port
+      .replace(/\/.*$/, '')          // Remove path and everything after /
+      .replace(/\?.*$/, '')          // Remove query string
+      .replace(/#.*$/, '')           // Remove hash/fragment
+      .replace(/\s+/g, '');          // Remove whitespace
 
     // Validate domain format (basic check)
     if (!cleanDomain || !cleanDomain.includes('.')) {

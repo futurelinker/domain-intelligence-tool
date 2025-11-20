@@ -8,6 +8,7 @@ import { isSubdomain, getRootDomain } from './utils.js';
 import { readFileSync } from 'fs'; 
 import { checkSSL } from './ssl.js';
 import { detectHosting } from './hosting.js';
+import { detectTechnologies } from './technology.js';
 
 
 // Get __dirname equivalent in ES modules
@@ -247,6 +248,41 @@ app.post('/api/hosting', async (req, res) => {
 
   } catch (error) {
     console.error('Hosting API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Technology detection endpoint
+app.post('/api/technology', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    // Validate input
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain is required',
+        message: 'Please provide a domain name'
+      });
+    }
+
+    console.log(`📥 Technology detection request for: ${domain}`);
+
+    // Detect technologies
+    const techData = await detectTechnologies(domain);
+
+    // Return results
+    res.json({
+      success: true,
+      data: techData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Technology API error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

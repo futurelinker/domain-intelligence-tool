@@ -9,6 +9,7 @@ const dnsResults = document.getElementById('dnsResults');
 const propagationResults = document.getElementById('propagationResults');
 const sslResults = document.getElementById('sslResults');
 const hostingResults = document.getElementById('hostingResults');
+const technologyResults = document.getElementById('technologyResults');
 
 // Lookup button click handler
 lookupBtn.addEventListener('click', async () => {
@@ -48,14 +49,27 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Perform full lookup (WHOIS + DNS + Propagation)
+// Perform full lookup (WHOIS + DNS + Propagation + SSL + Hosting + Technology)
 async function performFullLookup(domain) {
+  // Clean domain input (remove protocols, paths, etc.)
+  domain = domain
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\//, '')   // Remove protocol
+    .replace(/^www\./, '')         // Remove www
+    .replace(/:\d+/, '')           // Remove port
+    .replace(/\/.*$/, '')          // Remove path and everything after /
+    .replace(/\?.*$/, '')          // Remove query string
+    .replace(/#.*$/, '')           // Remove hash/fragment
+    .replace(/\s+/g, '');          // Remove whitespace
+  
+  console.log(`🔍 Cleaned domain: ${domain}`);
+
+  // Update input field with cleaned domain
+  domainInput.value = domain;
+  
   // Hide previous results/errors
   hideAll();
-  error.classList.add('hidden');
-  results.classList.add('hidden');
-  document.getElementById('subdomainBanner').classList.add('hidden');
-  // DON'T hide DNS and Propagation - we'll let the display functions handle it
   
   // Show loading
   loading.classList.remove('hidden');
@@ -64,7 +78,7 @@ async function performFullLookup(domain) {
 
   try {
     // Call all three APIs in parallel
-    const [whoisResponse, dnsResponse, propagationResponse, sslResponse, hostingResponse] = await Promise.all([
+const [whoisResponse, dnsResponse, propagationResponse, sslResponse, hostingResponse, technologyResponse] = await Promise.all([
       fetch('/api/whois', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,6 +103,11 @@ async function performFullLookup(domain) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
+      }),
+      fetch('/api/technology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
       })
     ]);
 
@@ -97,6 +116,7 @@ async function performFullLookup(domain) {
     const propagationData = await propagationResponse.json();
     const sslData = await sslResponse.json();
     const hostingData = await hostingResponse.json();
+    const technologyData = await technologyResponse.json();
 
 
     // Check for errors
@@ -122,12 +142,19 @@ async function performFullLookup(domain) {
       console.warn('Hosting detection failed:', hostingData.error);
     }
 
+    // Technology is optional - don't throw error if it fails
+    if (!technologyResponse.ok || !technologyData.success) {
+      console.warn('Technology detection failed:', technologyData.error);
+    }
+
+
     // Display all results
     displayWhoisResults(whoisData.data);
     displayDnsResults(dnsData.data);
     displayPropagationResults(propagationData.data);
     displaySSLResults(sslData); // Note: passing entire sslData, not just .data
     displayHostingResults(hostingData);
+    displayTechnologyResults(technologyData);
 
 // For subdomains: Force DNS and Propagation to be visible
     if (whoisData.data.isSubdomain) {
@@ -504,6 +531,7 @@ function hideAll() {
   propagationResults.style.display = 'none';  // ← Changed
   sslResults.style.display = 'none';
   hostingResults.style.display = 'none';
+  technologyResults.style.display = 'none';
   document.getElementById('subdomainBanner').classList.add('hidden');
 }
 
@@ -803,6 +831,106 @@ function getCountryFlag(countryCode) {
     .split('')
     .map(char => 127397 + char.charCodeAt());
   return String.fromCodePoint(...codePoints);
+}
+
+// Display Technology Detection results
+function displayTechnologyResults(response) {
+  // Handle technology detection failure
+  if (!response.success) {
+    console.log('Technology detection not available:', response.error);
+    technologyResults.style.display = 'none';
+    return;
+  }
+
+  const data = response.data;
+
+  // Technology count badge
+  document.getElementById('technologyCount').textContent = 
+    `${data.total} ${data.total === 1 ? 'technology' : 'technologies'} detected`;
+
+  // Hide all category sections first
+  document.getElementById('techCMSSection').classList.add('hidden');
+  document.getElementById('techFrontendSection').classList.add('hidden');
+  document.getElementById('techBackendSection').classList.add('hidden');
+  document.getElementById('techServerSection').classList.add('hidden');
+  document.getElementById('techLibrariesSection').classList.add('hidden');
+  document.getElementById('techAnalyticsSection').classList.add('hidden');
+  document.getElementById('techEcommerceSection').classList.add('hidden');
+  document.getElementById('techNone').classList.add('hidden');
+
+  // Display technologies by category
+  if (data.total === 0) {
+    document.getElementById('techNone').classList.remove('hidden');
+  } else {
+    // CMS
+    if (data.categories.cms && data.categories.cms.length > 0) {
+      displayTechCategory('techCMS', 'techCMSSection', data.categories.cms);
+    }
+
+    // Frontend
+    if (data.categories.frontend && data.categories.frontend.length > 0) {
+      displayTechCategory('techFrontend', 'techFrontendSection', data.categories.frontend);
+    }
+
+    // Backend
+    if (data.categories.backend && data.categories.backend.length > 0) {
+      displayTechCategory('techBackend', 'techBackendSection', data.categories.backend);
+    }
+
+    // Server
+    if (data.categories.server && data.categories.server.length > 0) {
+      displayTechCategory('techServer', 'techServerSection', data.categories.server);
+    }
+
+    // Libraries
+    if (data.categories.libraries && data.categories.libraries.length > 0) {
+      displayTechCategory('techLibraries', 'techLibrariesSection', data.categories.libraries);
+    }
+
+    // Analytics
+    if (data.categories.analytics && data.categories.analytics.length > 0) {
+      displayTechCategory('techAnalytics', 'techAnalyticsSection', data.categories.analytics);
+    }
+
+    // E-commerce
+    if (data.categories.ecommerce && data.categories.ecommerce.length > 0) {
+      displayTechCategory('techEcommerce', 'techEcommerceSection', data.categories.ecommerce);
+    }
+  }
+
+  // Show technology results
+  technologyResults.style.display = 'block';
+}
+
+// Helper: Display technologies in a category
+function displayTechCategory(containerId, sectionId, technologies) {
+  const container = document.getElementById(containerId);
+  const section = document.getElementById(sectionId);
+  
+  container.innerHTML = '';
+  
+  technologies.forEach(tech => {
+    const badge = document.createElement('div');
+    badge.className = 'flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:shadow-md transition-shadow';
+    
+    // Confidence color
+    let confidenceColor = 'bg-gray-100 text-gray-700';
+    if (tech.confidence === 'high') {
+      confidenceColor = 'bg-green-100 text-green-800';
+    } else if (tech.confidence === 'medium') {
+      confidenceColor = 'bg-yellow-100 text-yellow-800';
+    }
+    
+    badge.innerHTML = `
+      <span class="text-xl">${tech.icon}</span>
+      <span class="font-medium text-gray-900">${escapeHtml(tech.name)}</span>
+      <span class="px-2 py-0.5 text-xs font-medium rounded ${confidenceColor}">${tech.confidence}</span>
+    `;
+    
+    container.appendChild(badge);
+  });
+  
+  section.classList.remove('hidden');
 }
 
 // Load version on page load
