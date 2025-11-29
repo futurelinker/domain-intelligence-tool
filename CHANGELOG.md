@@ -16,6 +16,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.8.0] - November 29, 2025
+
+### Added
+- **3-Column Grid Dashboard Layout**
+  - Modern grid-based layout (3 columns on desktop)
+  - Row 1: WHOIS, DNS Records, Hosting (1/3 each)
+  - Row 2: Technologies (2/3), SSL (1/3)
+  - Row 3: DNS Propagation (full width)
+  - 44% reduction in vertical scrolling
+  - Better space utilization and visual hierarchy
+  
+- **API Endpoint**
+  - Added `/api/version` endpoint for footer version display
+  - Returns version number in JSON format
+
+- **Enhanced Subdomain Banner**
+  - Dynamic subdomain name display
+  - Dynamic root domain name display
+  - "Lookup Root Domain" button for quick navigation
+  - Prevents "Cannot set properties of null" errors
+
+### Changed
+- **Card Styling**
+  - Larger border radius (24px) for modern appearance
+  - Softer shadows with hover lift effect (2px up)
+  - Green accent background on Hosting card (5% opacity)
+  - Cards now fill 100% height of grid cells
+  - Improved hover effects with stronger shadows
+
+- **Typography**
+  - Search input: Changed from Space Mono to Inter font
+  - Search input: Increased font size to 1.25rem (20px)
+  - Search button: Changed from Space Mono to Inter font
+  - All card titles remain Space Mono for consistency
+
+- **Grid System**
+  - Implemented CSS Grid with 3-column layout
+  - Responsive breakpoints: 3 columns → 2 columns → 1 column
+  - Technologies section gets 2/3 width for better display
+  - Asymmetric layout creates visual interest
+
+- **Visual Hierarchy**
+  - Hosting card highlighted with green accent (card-accent class)
+  - Card titles moved inside cards for unified appearance
+  - Consistent spacing with 1.5rem gaps
+
+### Fixed
+- **WHOIS Visibility Bug**
+  - Fixed WHOIS card not displaying after lookup
+  - Updated JavaScript to use `style.display` instead of `classList`
+  - Consistent show/hide methods across all sections
+
+- **Console Errors**
+  - Fixed 404 error: GET /api/version
+  - Fixed SyntaxError: Unexpected token '<'
+  - Fixed "Cannot set properties of null" on subdomain lookup
+
+- **Display Methods**
+  - Standardized all sections to use inline `style.display`
+  - Removed classList conflicts between HTML and JavaScript
+
+### Technical Improvements
+- **CSS Architecture**
+  - New `.dashboard-grid` container with 3-column system
+  - Grid helper classes: `.grid-full`, `.grid-third`, `.grid-two-thirds`
+  - Card variant: `.card-accent` for green-tinted cards
+  - Responsive grid system with media queries
+
+- **JavaScript Updates**
+  - Consistent visibility control using `style.display`
+  - Fixed subdomain element references
+  - Improved error handling
+
+- **Performance**
+  - More compact layout reduces page length
+  - Better browser performance with CSS Grid
+  - Faster visual scanning with grid organization
+
+### Metrics
+- **44% reduction in vertical scrolling** (2400px → 1350px)
+- **3-column grid** on desktop (better space use)
+- **Responsive design** adapts to all screen sizes
+- **Professional appearance** matching modern dashboards
+
+---
+
 ## [2.7.0] - November 28, 2025
 
 ### Added
@@ -464,6 +550,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.8.0   | Nov 29, 2025  | Grid Layout      | 3-column dashboard + bug fixes           |
+| 2.7.0   | Nov 28, 2025  | UI Redesign      | Complete dashboard redesign              |
 | 2.6.0   | Nov 19, 2025  | Stage 7          | CMS/Technology Detection                 |
 | 2.5.0   | Nov 19, 2025  | Stage 6          | Hosting Provider Detection               |
 | 2.4.0   | Nov 16, 2025  | Stage 5          | SSL/TLS Certificate Analysis             |

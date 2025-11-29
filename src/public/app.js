@@ -295,7 +295,7 @@ function displayWhoisResults(data) {
     subdomainBanner.classList.remove('hidden');
     
     // Hide WHOIS section for subdomains
-    results.classList.add('hidden');
+    results.style.display = 'none';
     
     // Add click handler for "lookup root domain" button
     document.getElementById('lookupRootDomain').onclick = () => {
@@ -405,7 +405,7 @@ function displayWhoisResults(data) {
   rawDataArrow.textContent = '▼';
 
   // Show results
-  results.classList.remove('hidden');
+  results.style.display = 'block';
 }
 
 // Display DNS results
@@ -682,7 +682,7 @@ function showError(message) {
 // Hide all
 function hideAll() {
   error.classList.add('hidden');
-  results.classList.add('hidden');
+  results.style.display = 'none';
   dnsResults.style.display = 'none';  // ← Changed
   propagationResults.style.display = 'none';  // ← Changed
   sslResults.style.display = 'none';

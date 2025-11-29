@@ -86,430 +86,445 @@
             <svg class="banner-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <div>
+            <div style="flex: 1;">
                 <strong>Subdomain Detected</strong>
-                <p>WHOIS information is not available for subdomains. Showing DNS, SSL, Hosting, and Technology data only.</p>
+                <p style="margin: 0.5rem 0;">
+                    <span id="subdomainName" style="font-family: 'Space Mono', monospace; color: var(--status-warning); font-weight: 600;"></span> 
+                    is a subdomain of 
+                    <span id="rootDomainName" style="font-family: 'Space Mono', monospace; color: var(--accent-green); font-weight: 600;"></span>
+                </p>
+                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    WHOIS information is not available for subdomains. Showing DNS, SSL, Hosting, and Technology data only.
+                </p>
+                <button 
+                    id="lookupRootDomain" 
+                    style="background: var(--accent-green); color: var(--text-on-accent); border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-family: 'Space Mono', monospace; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.background='var(--accent-green-dark)'"
+                    onmouseout="this.style.background='var(--accent-green)'">
+                    🔍 Lookup Root Domain
+                </button>
             </div>
         </div>
 
-        <!-- 1. WHOIS Information -->
-        <div id="results" class="hidden mt-8">
-            <h3 class="card-title">WHOIS Information</h3>
-
-            <div class="dark-card">
-                <!-- Domain and Registrar -->
-                <div class="data-grid">
-                    <div class="data-item">
-                        <p class="data-label">Domain Name</p>
-                        <p id="domainName" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Registrar</p>
-                        <p id="registrar" class="data-value"></p>
-                    </div>
-                </div>
-
-                <!-- Provider (Brazilian domains only) -->
-                <div id="providerContainer" class="hidden mb-6">
-                    <div class="data-item accent-card">
-                        <p class="data-label">Provider</p>
-                        <p id="provider" class="data-value"></p>
-                        <p style="font-size: 0.6875rem; margin-top: 0.25rem; opacity: 0.8;">DNS/Hosting provider registered with Registro.br</p>
-                    </div>
-                </div>
-
-                <!-- Dates Grid -->
-                <div class="data-grid">
-                    <div class="data-item">
-                        <p class="data-label">Created Date</p>
-                        <p id="createdDate" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Updated Date</p>
-                        <p id="updatedDate" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Expires Date</p>
-                        <p id="expiresDate" class="data-value"></p>
-                    </div>
-                </div>
-
-                <!-- Name Servers & DNSSEC Grid -->
-                <div class="data-grid" style="grid-template-columns: 1fr 1fr;">
-                    <div class="data-item">
-                        <p class="data-label">Name Servers</p>
-                        <div id="nameServers" class="space-y-2"></div>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">DNSSEC</p>
-                        <p id="dnssec" class="data-value"></p>
-                    </div>
-                </div>
-
-                <!-- Status Section -->
-                <div class="data-item mb-6">
-                    <p class="data-label">Domain Status</p>
-                    <div id="statusList" class="space-y-2"></div>
-                </div>
-
-                <!-- Raw Data Section -->
-                <div style="background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--status-warning); border-radius: var(--radius-md); overflow: hidden;">
-                    <button id="toggleRawData" style="width: 100%; text-align: left; padding: 1rem; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: var(--status-warning); font-size: 0.875rem; font-weight: 600;">
-                        <span>🔧 Raw WHOIS Data (Debug)</span>
-                        <span id="rawDataArrow">▼</span>
-                    </button>
-                    <div id="rawDataContent" class="hidden">
-                        <pre id="rawData" style="font-family: 'Space Mono', monospace; font-size: 0.6875rem; color: var(--text-secondary); overflow-x: auto; background: var(--bg-primary); padding: 1rem; border-top: 1px solid var(--border-color); max-height: 24rem; overflow-y: auto; margin: 0;"></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. DNS Records -->
-        <div id="dnsResults" class="mt-8" style="display: none;">
-            <h3 class="card-title">DNS Records</h3>
-
-            <div class="dark-card">
-                <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                    <!-- A Records (IPv4) -->
-                    <div class="data-item">
-                        <p class="data-label">A Records (IPv4)</p>
-                        <div id="aRecords" class="space-y-2"></div>
+        <div class="dashboard-grid">
+            <!-- 1. WHOIS Information -->
+            <div id="results" class="grid-third" style="display: none;">
+                <div class="dark-card">
+                    <h3 class="card-title">WHOIS Information</h3>
+                    
+                    <!-- Domain and Registrar -->
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <p class="data-label">Domain Name</p>
+                            <p id="domainName" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Registrar</p>
+                            <p id="registrar" class="data-value"></p>
+                        </div>
                     </div>
 
-                    <!-- AAAA Records (IPv6) -->
-                    <div class="data-item">
-                        <p class="data-label">AAAA Records (IPv6)</p>
-                        <div id="aaaaRecords" class="space-y-2"></div>
+                    <!-- Provider (Brazilian domains only) -->
+                    <div id="providerContainer" class="hidden mb-6">
+                        <div class="data-item accent-card">
+                            <p class="data-label">Provider</p>
+                            <p id="provider" class="data-value"></p>
+                            <p style="font-size: 0.6875rem; margin-top: 0.25rem; opacity: 0.8;">DNS/Hosting provider registered with Registro.br</p>
+                        </div>
                     </div>
 
-                    <!-- MX Records (Mail) -->
-                    <div class="data-item">
-                        <p class="data-label">MX Records (Mail)</p>
-                        <div id="mxRecords" class="space-y-2"></div>
+                    <!-- Dates Grid -->
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <p class="data-label">Created Date</p>
+                            <p id="createdDate" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Updated Date</p>
+                            <p id="updatedDate" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Expires Date</p>
+                            <p id="expiresDate" class="data-value"></p>
+                        </div>
                     </div>
 
-                    <!-- NS Records -->
-                    <div class="data-item">
-                        <p class="data-label">NS Records</p>
-                        <div id="dnsNsRecords" class="space-y-2"></div>
+                    <!-- Name Servers & DNSSEC Grid -->
+                    <div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="data-item">
+                            <p class="data-label">Name Servers</p>
+                            <div id="nameServers" class="space-y-2"></div>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">DNSSEC</p>
+                            <p id="dnssec" class="data-value"></p>
+                        </div>
                     </div>
 
-                    <!-- CAA Records -->
-                    <div class="data-item">
-                        <p class="data-label">CAA Records</p>
-                        <div id="caaRecords" class="space-y-2"></div>
+                    <!-- Status Section -->
+                    <div class="data-item mb-6">
+                        <p class="data-label">Domain Status</p>
+                        <div id="statusList" class="space-y-2"></div>
                     </div>
 
-                    <!-- SOA Record -->
-                    <div class="data-item">
-                        <p class="data-label">SOA Record</p>
-                        <div id="soaRecord" style="font-size: 0.75rem;"></div>
-                    </div>
-                </div>
-
-                <!-- TXT Records (Full Width) -->
-                <div class="data-item mt-4">
-                    <p class="data-label">TXT Records</p>
-                    <div id="txtRecords" class="space-y-2"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Hosting Provider -->
-        <div id="hostingResults" class="mt-8" style="display: none;">
-            <h3 class="card-title">Hosting & Network</h3>
-
-            <div class="dark-card">
-                <!-- Provider Highlight -->
-                <div class="accent-card mb-6" style="padding: 1.5rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
-                    <div style="font-size: 3rem; line-height: 1;">🌐</div>
-                    <div style="flex: 1;">
-                        <div id="hostingProvider" style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem;"></div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            <span id="hostingProviderBadge" class="status-badge"></span>
-                            <span id="hostingTypeBadge" class="status-badge"></span>
+                    <!-- Raw Data Section -->
+                    <div style="background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--status-warning); border-radius: var(--radius-md); overflow: hidden;">
+                        <button id="toggleRawData" style="width: 100%; text-align: left; padding: 1rem; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: var(--status-warning); font-size: 0.875rem; font-weight: 600;">
+                            <span>🔧 Raw WHOIS Data (Debug)</span>
+                            <span id="rawDataArrow">▼</span>
+                        </button>
+                        <div id="rawDataContent" class="hidden">
+                            <pre id="rawData" style="font-family: 'Space Mono', monospace; font-size: 0.6875rem; color: var(--text-secondary); overflow-x: auto; background: var(--bg-primary); padding: 1rem; border-top: 1px solid var(--border-color); max-height: 24rem; overflow-y: auto; margin: 0;"></pre>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Network Info Grid -->
-                <div class="data-grid">
-                    <div class="data-item">
-                        <p class="data-label">IP Address</p>
-                        <p id="hostingIP" class="data-value mono"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Organization</p>
-                        <p id="hostingOrg" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">ASN</p>
-                        <p id="hostingASN" class="data-value mono"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">ISP/Network</p>
-                        <p id="hostingISP" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Country</p>
-                        <p id="hostingCountry" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">City</p>
-                        <p id="hostingCity" class="data-value"></p>
-                    </div>
-                </div>
+            <!-- 2. DNS Records -->
+            <div id="dnsResults" class="grid-third" style="display: none;">
+                <div class="dark-card">
 
-                <!-- Location Details -->
-                <div class="data-item mt-4" style="background: rgba(197, 213, 184, 0.05);">
-                    <p class="data-label">📍 Geographic Location</p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 0.75rem;">Region:</span>
-                            <span id="hostingRegion" style="margin-left: 0.5rem; color: var(--text-primary); font-size: 0.875rem;"></span>
+                    <h3 class="card-title">DNS Records</h3>
+                    <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <!-- A Records (IPv4) -->
+                        <div class="data-item">
+                            <p class="data-label">A Records (IPv4)</p>
+                            <div id="aRecords" class="space-y-2"></div>
                         </div>
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 0.75rem;">Timezone:</span>
-                            <span id="hostingTimezone" style="margin-left: 0.5rem; color: var(--text-primary); font-size: 0.875rem;"></span>
+
+                        <!-- AAAA Records (IPv6) -->
+                        <div class="data-item">
+                            <p class="data-label">AAAA Records (IPv6)</p>
+                            <div id="aaaaRecords" class="space-y-2"></div>
+                        </div>
+
+                        <!-- MX Records (Mail) -->
+                        <div class="data-item">
+                            <p class="data-label">MX Records (Mail)</p>
+                            <div id="mxRecords" class="space-y-2"></div>
+                        </div>
+
+                        <!-- NS Records -->
+                        <div class="data-item">
+                            <p class="data-label">NS Records</p>
+                            <div id="dnsNsRecords" class="space-y-2"></div>
+                        </div>
+
+                        <!-- CAA Records -->
+                        <div class="data-item">
+                            <p class="data-label">CAA Records</p>
+                            <div id="caaRecords" class="space-y-2"></div>
+                        </div>
+
+                        <!-- SOA Record -->
+                        <div class="data-item">
+                            <p class="data-label">SOA Record</p>
+                            <div id="soaRecord" style="font-size: 0.75rem;"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Type Indicators -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                    <div id="hostingCloudBadge" class="data-item text-center" style="padding: 1rem;">
-                        <!-- Content will be populated by JavaScript -->
-                    </div>
-                    <div id="hostingCDNBadge" class="data-item text-center" style="padding: 1rem;">
-                        <!-- Content will be populated by JavaScript -->
+                    <!-- TXT Records (Full Width) -->
+                    <div class="data-item mt-4">
+                        <p class="data-label">TXT Records</p>
+                        <div id="txtRecords" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 4. Website Technologies -->
-        <div id="technologyResults" class="mt-8" style="display: none;">
-            <h3 class="card-title">Website Technologies</h3>
+            <!-- 3. Hosting Provider -->
+            <div id="hostingResults" class="grid-third" style="display: none;">
+                <div class="dark-card">
 
-            <div class="dark-card">
-                <div style="margin-bottom: 1.5rem;">
-                    <span id="technologyCount" class="status-badge status-info"></span>
-                </div>
+                    <h3 class="card-title">Hosting & Network</h3>
+                    <!-- Provider Highlight -->
+                    <div class="accent-card mb-6" style="padding: 1.5rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 3rem; line-height: 1;">🌐</div>
+                        <div style="flex: 1;">
+                            <div id="hostingProvider" style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem;"></div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span id="hostingProviderBadge" class="status-badge"></span>
+                                <span id="hostingTypeBadge" class="status-badge"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- CMS (Featured) -->
-                <div id="techCMSSection" class="hidden mb-6">
-                    <div class="section-title">Content Management System</div>
-                    <div id="techCMS" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
+                    <!-- Network Info Grid -->
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <p class="data-label">IP Address</p>
+                            <p id="hostingIP" class="data-value mono"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Organization</p>
+                            <p id="hostingOrg" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">ASN</p>
+                            <p id="hostingASN" class="data-value mono"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">ISP/Network</p>
+                            <p id="hostingISP" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Country</p>
+                            <p id="hostingCountry" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">City</p>
+                            <p id="hostingCity" class="data-value"></p>
+                        </div>
+                    </div>
 
-                <!-- Frontend Frameworks -->
-                <div id="techFrontendSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">Frontend Framework</div>
-                    <div id="techFrontend" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
+                    <!-- Location Details -->
+                    <div class="data-item mt-4" style="background: rgba(197, 213, 184, 0.05);">
+                        <p class="data-label">📍 Geographic Location</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.75rem;">Region:</span>
+                                <span id="hostingRegion" style="margin-left: 0.5rem; color: var(--text-primary); font-size: 0.875rem;"></span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.75rem;">Timezone:</span>
+                                <span id="hostingTimezone" style="margin-left: 0.5rem; color: var(--text-primary); font-size: 0.875rem;"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Backend -->
-                <div id="techBackendSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">Backend Technology</div>
-                    <div id="techBackend" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- Web Server -->
-                <div id="techServerSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">Web Server</div>
-                    <div id="techServer" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- Libraries -->
-                <div id="techLibrariesSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">JavaScript Libraries</div>
-                    <div id="techLibraries" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- Analytics -->
-                <div id="techAnalyticsSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">Analytics & Marketing</div>
-                    <div id="techAnalytics" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- E-commerce -->
-                <div id="techEcommerceSection" class="hidden mb-6">
-                    <div class="section-title" style="font-size: 0.875rem;">E-commerce</div>
-                    <div id="techEcommerce" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- No technologies found -->
-                <div id="techNone" class="hidden text-center" style="padding: 2rem;">
-                    <p style="color: var(--text-secondary);">No specific technologies detected</p>
-                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">The website may use custom technologies or detection was limited</p>
+                    <!-- Type Indicators -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div id="hostingCloudBadge" class="data-item text-center" style="padding: 1rem;">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                        <div id="hostingCDNBadge" class="data-item text-center" style="padding: 1rem;">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 5. DNS Propagation Status -->
-        <div id="propagationResults" class="mt-8" style="display: none;">
-            <h3 class="card-title">DNS Propagation Status</h3>
+            <!-- 4. Website Technologies -->
+            <div id="technologyResults" class="grid-two-thirds" style="display: none;">
+                <div class="dark-card">
+                    
+                    <h3 class="card-title">Website Technologies</h3>
+                    <div style="margin-bottom: 1.5rem;">
+                        <span id="technologyCount" class="status-badge status-info"></span>
+                    </div>
 
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- CMS (Featured) -->
+                    <div id="techCMSSection" class="hidden mb-6">
+                        <div class="section-title">Content Management System</div>
+                        <div id="techCMS" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Frontend Frameworks -->
+                    <div id="techFrontendSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">Frontend Framework</div>
+                        <div id="techFrontend" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Backend -->
+                    <div id="techBackendSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">Backend Technology</div>
+                        <div id="techBackend" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Web Server -->
+                    <div id="techServerSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">Web Server</div>
+                        <div id="techServer" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Libraries -->
+                    <div id="techLibrariesSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">JavaScript Libraries</div>
+                        <div id="techLibraries" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div id="techAnalyticsSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">Analytics & Marketing</div>
+                        <div id="techAnalytics" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- E-commerce -->
+                    <div id="techEcommerceSection" class="hidden mb-6">
+                        <div class="section-title" style="font-size: 0.875rem;">E-commerce</div>
+                        <div id="techEcommerce" style="display: flex; flex-wrap: wrap; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- No technologies found -->
+                    <div id="techNone" class="hidden text-center" style="padding: 2rem;">
+                        <p style="color: var(--text-secondary);">No specific technologies detected</p>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">The website may use custom technologies or detection was limited</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. SSL Certificate -->
+            <div id="sslResults" class="grid-third" style="display: none;">
+                <div class="dark-card">
+
+                    <h3 class="card-title">SSL Certificate</h3>
+                    <!-- Status Header -->
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 2rem;">🔒</span>
+                        <div style="flex: 1;">
+                            <div style="font-family: 'Space Mono', monospace; font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem;">SSL/TLS Certificate</div>
+                            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                                <span id="sslStatusBadge" class="status-badge"></span>
+                                <span id="sslExpiryBadge" style="font-family: 'Space Mono', monospace; font-weight: 700;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Certificate Info Grid -->
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <p class="data-label">IP Address</p>
+                            <p id="sslIPAddress" class="data-value mono"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Server Type</p>
+                            <p id="sslServerType" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Issued By</p>
+                            <p id="sslIssuer" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Valid From</p>
+                            <p id="sslValidFrom" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Valid Until</p>
+                            <p id="sslValidTo" class="data-value"></p>
+                        </div>
+                        <div class="data-item">
+                            <p class="data-label">Days Remaining</p>
+                            <p id="sslDaysRemaining" class="data-value"></p>
+                        </div>
+                    </div>
+
+                    <!-- Subject Alternative Names -->
+                    <div id="sslSANContainer" class="data-item mt-4" style="background: rgba(96, 165, 250, 0.05);">
+                        <p class="data-label">Certificate Covers</p>
+                        <div id="sslSANs" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;"></div>
+                    </div>
+
+                    <!-- Certificate Chain -->
+                    <div id="sslChainContainer" class="data-item mt-4" style="background: rgba(197, 213, 184, 0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <p class="data-label">Certificate Chain</p>
+                            <span id="sslChainCount" class="status-badge status-info"></span>
+                        </div>
+                        <div id="sslChain" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                    </div>
+
+                    <!-- Security Info -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                        <div id="sslSelfSignedBadge" class="data-item text-center"></div>
+                        <div id="sslWildcardBadge" class="data-item text-center"></div>
+                        <div id="sslTrustedBadge" class="data-item text-center"></div>
+                    </div>
+
+                    <!-- SSL Labs Link -->
+                    <div class="mt-4" style="padding: 1rem; background: rgba(96, 165, 250, 0.05); border-left: 4px solid var(--status-info); border-radius: var(--radius-sm);">
+                        <p style="font-size: 0.8125rem; color: var(--text-secondary);">
+                            For detailed security analysis, visit 
+                            <a href="#" id="sslLabsLink" target="_blank" style="color: var(--status-info); text-decoration: underline; font-weight: 600;">SSL Labs</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. DNS Propagation Status -->
+            <div id="propagationResults" class="grid-full" style="display: none;">
                 <!-- A Record -->
                 <div class="dark-card">
-                    <button class="collapsible-header" onclick="toggleSection('aDetails')" style="border: none; border-radius: 0;">
-                        <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                            <span class="status-badge status-info" style="min-width: 40px; text-align: center;">A</span>
-                            <span style="font-weight: 600;">IPv4 Addresses</span>
-                            <span id="aStatusBadge" class="status-badge"></span>
-                            <span id="aPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
-                            <span id="aServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                    <h3 class="card-title">DNS Propagation Status</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button class="collapsible-header" onclick="toggleSection('aDetails')" style="border: none; border-radius: 0;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <span class="status-badge status-info" style="min-width: 40px; text-align: center;">A</span>
+                                <span style="font-weight: 600;">IPv4 Addresses</span>
+                                <span id="aStatusBadge" class="status-badge"></span>
+                                <span id="aPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
+                                <span id="aServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                            </div>
+                            <svg id="aChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="aDetails" class="collapsible-content hidden">
+                            <div id="aValues" class="mb-4"></div>
+                            <div id="aServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                         </div>
-                        <svg id="aChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="aDetails" class="collapsible-content hidden">
-                        <div id="aValues" class="mb-4"></div>
-                        <div id="aServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                     </div>
-                </div>
 
-                <!-- NS Record -->
-                <div class="dark-card">
-                    <button class="collapsible-header" onclick="toggleSection('nsDetails')" style="border: none; border-radius: 0;">
-                        <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                            <span class="status-badge status-success" style="min-width: 40px; text-align: center;">NS</span>
-                            <span style="font-weight: 600;">Name Servers</span>
-                            <span id="nsStatusBadge" class="status-badge"></span>
-                            <span id="nsPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
-                            <span id="nsServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                    <!-- NS Record -->
+                    <div class="dark-card">
+                        <button class="collapsible-header" onclick="toggleSection('nsDetails')" style="border: none; border-radius: 0;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <span class="status-badge status-success" style="min-width: 40px; text-align: center;">NS</span>
+                                <span style="font-weight: 600;">Name Servers</span>
+                                <span id="nsStatusBadge" class="status-badge"></span>
+                                <span id="nsPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
+                                <span id="nsServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                            </div>
+                            <svg id="nsChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="nsDetails" class="collapsible-content hidden">
+                            <div id="nsValues" class="mb-4"></div>
+                            <div id="nsServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                         </div>
-                        <svg id="nsChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="nsDetails" class="collapsible-content hidden">
-                        <div id="nsValues" class="mb-4"></div>
-                        <div id="nsServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                     </div>
-                </div>
 
-                <!-- MX Record -->
-                <div class="dark-card">
-                    <button class="collapsible-header" onclick="toggleSection('mxDetails')" style="border: none; border-radius: 0;">
-                        <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                            <span class="status-badge" style="background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid #a855f7; min-width: 40px; text-align: center;">MX</span>
-                            <span style="font-weight: 600;">Mail Servers</span>
-                            <span id="mxStatusBadge" class="status-badge"></span>
-                            <span id="mxPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
-                            <span id="mxServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                    <!-- MX Record -->
+                    <div class="dark-card">
+                        <button class="collapsible-header" onclick="toggleSection('mxDetails')" style="border: none; border-radius: 0;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <span class="status-badge" style="background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid #a855f7; min-width: 40px; text-align: center;">MX</span>
+                                <span style="font-weight: 600;">Mail Servers</span>
+                                <span id="mxStatusBadge" class="status-badge"></span>
+                                <span id="mxPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
+                                <span id="mxServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                            </div>
+                            <svg id="mxChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="mxDetails" class="collapsible-content hidden">
+                            <div id="mxValues" class="mb-4"></div>
+                            <div id="mxServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                         </div>
-                        <svg id="mxChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="mxDetails" class="collapsible-content hidden">
-                        <div id="mxValues" class="mb-4"></div>
-                        <div id="mxServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                     </div>
-                </div>
 
-                <!-- TXT Record -->
-                <div class="dark-card">
-                    <button class="collapsible-header" onclick="toggleSection('txtDetails')" style="border: none; border-radius: 0;">
-                        <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                            <span class="status-badge status-warning" style="min-width: 40px; text-align: center;">TXT</span>
-                            <span style="font-weight: 600;">Text Records</span>
-                            <span id="txtStatusBadge" class="status-badge"></span>
-                            <span id="txtPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
-                            <span id="txtServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                    <!-- TXT Record -->
+                    <div class="dark-card">
+                        <button class="collapsible-header" onclick="toggleSection('txtDetails')" style="border: none; border-radius: 0;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <span class="status-badge status-warning" style="min-width: 40px; text-align: center;">TXT</span>
+                                <span style="font-weight: 600;">Text Records</span>
+                                <span id="txtStatusBadge" class="status-badge"></span>
+                                <span id="txtPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-green);"></span>
+                                <span id="txtServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                            </div>
+                            <svg id="txtChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="txtDetails" class="collapsible-content hidden">
+                            <div id="txtValues" class="mb-4"></div>
+                            <div id="txtServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                         </div>
-                        <svg id="txtChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="txtDetails" class="collapsible-content hidden">
-                        <div id="txtValues" class="mb-4"></div>
-                        <div id="txtServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- 6. SSL Certificate -->
-        <div id="sslResults" class="mt-8" style="display: none;">
-            <h3 class="card-title">SSL Certificate</h3>
-
-            <div class="dark-card">
-                <!-- Status Header -->
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
-                    <span style="font-size: 2rem;">🔒</span>
-                    <div style="flex: 1;">
-                        <div style="font-family: 'Space Mono', monospace; font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem;">SSL/TLS Certificate</div>
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <span id="sslStatusBadge" class="status-badge"></span>
-                            <span id="sslExpiryBadge" style="font-family: 'Space Mono', monospace; font-weight: 700;"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Certificate Info Grid -->
-                <div class="data-grid">
-                    <div class="data-item">
-                        <p class="data-label">IP Address</p>
-                        <p id="sslIPAddress" class="data-value mono"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Server Type</p>
-                        <p id="sslServerType" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Issued By</p>
-                        <p id="sslIssuer" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Valid From</p>
-                        <p id="sslValidFrom" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Valid Until</p>
-                        <p id="sslValidTo" class="data-value"></p>
-                    </div>
-                    <div class="data-item">
-                        <p class="data-label">Days Remaining</p>
-                        <p id="sslDaysRemaining" class="data-value"></p>
-                    </div>
-                </div>
-
-                <!-- Subject Alternative Names -->
-                <div id="sslSANContainer" class="data-item mt-4" style="background: rgba(96, 165, 250, 0.05);">
-                    <p class="data-label">Certificate Covers</p>
-                    <div id="sslSANs" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;"></div>
-                </div>
-
-                <!-- Certificate Chain -->
-                <div id="sslChainContainer" class="data-item mt-4" style="background: rgba(197, 213, 184, 0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <p class="data-label">Certificate Chain</p>
-                        <span id="sslChainCount" class="status-badge status-info"></span>
-                    </div>
-                    <div id="sslChain" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
-                </div>
-
-                <!-- Security Info -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
-                    <div id="sslSelfSignedBadge" class="data-item text-center"></div>
-                    <div id="sslWildcardBadge" class="data-item text-center"></div>
-                    <div id="sslTrustedBadge" class="data-item text-center"></div>
-                </div>
-
-                <!-- SSL Labs Link -->
-                <div class="mt-4" style="padding: 1rem; background: rgba(96, 165, 250, 0.05); border-left: 4px solid var(--status-info); border-radius: var(--radius-sm);">
-                    <p style="font-size: 0.8125rem; color: var(--text-secondary);">
-                        For detailed security analysis, visit 
-                        <a href="#" id="sslLabsLink" target="_blank" style="color: var(--status-info); text-decoration: underline; font-weight: 600;">SSL Labs</a>
-                    </p>
-                </div>
-            </div>
-        </div>
+        </div> <!-- End of Dashboard Grid -->
 
     </main>
 

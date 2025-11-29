@@ -2,9 +2,11 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)](CHANGELOG.md)
+[![Grid Layout](https://img.shields.io/badge/layout-3--column%20grid-c5d5b8.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
+
 
 ## 🎯 Purpose
 
@@ -16,13 +18,13 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.7.0)
+### Current Features (v2.8.0)
 
-- ✅ **Professional Dark Theme UI**
-  - Complete design system implementation
-  - Consistent color palette and typography
-  - Space Mono font for all technical data
-  - 35% more compact layout
+- ✅ **Modern 3-Column Grid Dashboard**
+  - Responsive grid layout (3 → 2 → 1 columns)
+  - 44% reduction in vertical scrolling
+  - Better space utilization
+  - Professional card design with hover effects
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
@@ -88,6 +90,36 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - Mobile-friendly interface
   - Real-time lookup feedback
   - Visual status indicators
+
+### Dashboard Layout (v2.8.0)
+
+**3-Column Grid System:**
+
+**Row 1:** Primary Information (3 equal columns)
+- WHOIS Information (domain ownership)
+- DNS Records (technical configuration)
+- Hosting & Network (infrastructure) - with green accent ✨
+
+**Row 2:** Secondary Information (asymmetric layout)
+- Website Technologies (2/3 width - needs space for badges)
+- SSL Certificate (1/3 width - compact info)
+
+**Row 3:** Detailed Analysis (full width)
+- DNS Propagation Status (4 collapsible tabs)
+
+**Responsive Behavior:**
+- Desktop (>1024px): 3-column grid
+- Tablet (768-1024px): 2-column grid
+- Mobile (<768px): 1-column stack
+
+**Visual Features:**
+- Larger rounded corners (24px)
+- Soft shadows with hover lift effects
+- Green accent on Hosting card
+- Space Mono typography for technical data
+- Professional dark theme
+
+---
 
 ### UI Design System (v2.7.0)
 

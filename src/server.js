@@ -38,6 +38,13 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Version endpoint
+app.get('/api/version', (req, res) => {
+  res.json({
+    version: VERSION
+  });
+});
+
 // WHOIS lookup endpoint
 app.post('/api/whois', async (req, res) => {
   try {
