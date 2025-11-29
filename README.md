@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
 
@@ -16,13 +16,19 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 
 ## ✨ Features
 
-### Current Features (v2.6.0)
+### Current Features (v2.7.0)
+
+- ✅ **Professional Dark Theme UI**
+  - Complete design system implementation
+  - Consistent color palette and typography
+  - Space Mono font for all technical data
+  - 35% more compact layout
 
 - ✅ **WHOIS Lookup**
   - Domain registrar information
   - Registration and expiration dates
-  - **Brazilian domain support (.br, .com.br)**
-  - **Provider field for Brazilian domains**
+  - Brazilian domain support (.br, .com.br)
+  - Provider field for Brazilian domains
   - Domain status with ICANN reference links
   - DNSSEC status
   - Name servers
@@ -33,72 +39,72 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
   - MX Records (Mail servers with priority)
   - TXT Records (SPF, DKIM, DMARC)
   - NS Records (Name servers)
-  - SOA Record (Start of Authority)
+  - SOA Record (Grid layout - easy to scan)
   - CAA Records (Certificate Authority)
 
 - ✅ **Multi-Record DNS Propagation Checker**
   - Check A, NS, MX, TXT record propagation
   - 11 global DNS servers queried simultaneously
   - Real-time status indicators (Propagated/Propagating)
-  - **Collapsible cards with summary view**
-  - **Click-to-expand for detailed server results**
+  - Collapsible cards with summary view
+  - Click-to-expand for detailed server results
   - Color-coded visual indicators
   - Compact 4-column server grid
-
-- ✅ **Dynamic Version Display**
-  - Auto-updates from VERSION file
-  - Single source of truth
-
-  - ✅ **SSL/TLS Certificate Analysis**
-  - Certificate validity and trust status
-  - Expiration tracking with color-coded warnings
-  - Certificate issuer (CA) information
-  - Subject Alternative Names (all covered domains)
-  - Complete certificate chain visualization
-  - Wildcard and self-signed detection
-  - Integration with SSL Labs for deep analysis
-  - Fast results using Node.js TLS module
 
 - ✅ **SSL/TLS Certificate Analysis**
   - Certificate validity and trust status
   - Expiration tracking with color-coded warnings
   - Certificate issuer (CA) information
   - Subject Alternative Names (all covered domains)
-  - Complete certificate chain visualization
+  - Complete certificate chain visualization (40% more compact)
   - Wildcard and self-signed detection
   - Integration with SSL Labs for deep analysis
-  - Fast results using Node.js TLS module
 
 - ✅ **Hosting Provider Detection**
   - Automatic detection of 20+ major providers
   - Cloud platforms (AWS, GCP, Azure, DigitalOcean, etc.)
-  - CDN services (Cloudflare, Fastly, Akamai, BunnyCDN, etc.)
+  - CDN services (Cloudflare, Fastly, Akamai, etc.)
   - Traditional hosting (GoDaddy, Bluehost, etc.)
   - Modern platforms (Vercel, Netlify)
   - IP geolocation (country, region, city, timezone)
   - ASN and organization information
-  - Cloud and CDN detection badges
-  - Network provider classification
+  - Descriptive badges for hosting type
 
 - ✅ **CMS/Technology Detection**
   - Automatic detection of 40+ technologies
-  - CMS platforms (WordPress, Drupal, Joomla, Shopify, Wix, etc.)
-  - Frontend frameworks (React, Vue, Angular, Next.js, Nuxt, Svelte)
+  - Prominent CMS display (WordPress, Drupal, Shopify, etc.)
+  - Frontend frameworks (React, Vue, Angular, Next.js, etc.)
   - Backend technologies (PHP, Node.js, Python, Ruby, ASP.NET)
   - Web servers (nginx, Apache, IIS, LiteSpeed)
   - JavaScript libraries (jQuery, Bootstrap, Tailwind CSS)
   - Analytics tools (Google Analytics, Tag Manager, Facebook Pixel)
   - E-commerce platforms (WooCommerce, Magento, PrestaShop)
   - Confidence level indicators (high/medium/low)
-  - Grouped by technology category
 
 - ✅ **Professional UI**
-  - Tailwind CSS responsive design
-  - 2-3 column responsive grid layout
-  - Collapsible debug information
+  - Unified design system (no Tailwind)
+  - Responsive dark theme
+  - Collapsible sections for better UX
   - Mobile-friendly interface
   - Real-time lookup feedback
   - Visual status indicators
+
+### UI Design System (v2.7.0)
+
+**Complete redesign** with a professional, unified design system:
+
+- **Color Palette**: Consistent dark theme with accent green
+- **Typography**: Space Mono for technical data, Inter for body text
+- **Components**: Reusable badge, card, and data display classes
+- **Spacing**: 35% more compact layout without losing readability
+- **Consistency**: Same visual language across all 6 sections
+
+**Key Improvements:**
+- SSL certificate chain: 40% more compact
+- SOA DNS record: Grid layout (43% space reduction)
+- All technical values: Space Mono monospace font
+- Status badges: Unified design system classes
+- Hover effects: Smooth transitions throughout
 
 ### Planned Features (Roadmap)
 

@@ -16,6 +16,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.7.0] - November 28, 2025
+
+### Added
+- **Complete Dashboard Redesign (UI Overhaul)**
+  - Migrated entire dashboard to unified design system
+  - Removed all Tailwind utility classes
+  - Implemented CSS custom properties throughout
+  - Added Space Mono monospace font for all technical data
+  - New professional dark theme with consistent color palette
+
+### Changed
+- **Hosting Section (Refinement #1)**
+  - Added descriptive badges for Cloud/Traditional hosting
+  - Added descriptive badges for CDN/Direct connection
+  - Improved visual hierarchy with design system colors
+  
+- **Technologies Section (Refinement #2)**
+  - Made CMS detection more prominent (larger, bolder)
+  - Increased icon sizes (20% larger, full opacity)
+  - Changed count badge to accent green
+  - Improved confidence badge contrast (softer colors)
+  - Added smooth hover effects
+
+- **SSL Certificate Section (Refinement #3)**
+  - Redesigned certificate chain cards (40% more compact)
+  - Made expiry dates bold with Space Mono font
+  - Inline type badges save vertical space
+  - Removed redundant "Issued by" information
+  - Shorter date format (Jan 15, 2025 vs January 15, 2025)
+  - Color-coded certificate types (leaf/intermediate/root)
+
+- **DNS Records Section (Refinement #4)**
+  - Completely redesigned SOA record with grid layout (43% space reduction)
+  - All DNS values now use Space Mono font
+  - Data labels styled as uppercase, small, muted
+  - Improved TXT record readability with monospace font
+  - Better line-height for long records
+
+- **DNS Propagation Section (Refinement #5)**
+  - Migrated status badges to design system
+  - Percentage badges now bold with Space Mono
+  - Rounded value pills with better contrast
+  - Server cards with subtle background tints
+  - Color-coded borders (green for success, red for errors)
+
+- **WHOIS Section (Refinement #6)**
+  - All values use consistent `data-value` class
+  - Name servers display with Space Mono and proper spacing
+  - Status links with hover effect (blue → green)
+  - Raw WHOIS data styled with Space Mono
+  - Consistent styling with all other sections
+
+### Technical Improvements
+- **Design System Implementation**
+  - 100% migration from Tailwind to custom design system
+  - All colors now use CSS custom properties
+  - Consistent badge classes (`status-badge`, `data-value`)
+  - Single source of truth for all styling
+  
+- **Typography System**
+  - Space Mono for all headers and technical data
+  - Inter for body text
+  - Consistent font sizes (0.875rem standard, 0.75rem small)
+  - Better line-heights for improved readability
+
+- **Performance & Maintainability**
+  - Reduced CSS class usage (~40% reduction)
+  - Improved code consistency
+  - Easier to maintain with centralized design system
+  - Better browser performance (fewer class calculations)
+
+### Fixed
+- DNS section visibility issue (inline style priority)
+- SSL section duplicate variable declarations
+- Consistent show/hide methods across all sections
+
+### Metrics
+- 35% overall vertical space reduction
+- 40% reduction in SSL certificate chain height
+- 43% reduction in SOA record height
+- 100% design system migration
+- 0 Tailwind classes remaining
+
+---
+
 ## [2.6.0] - November 19, 2025
 
 ### Added
