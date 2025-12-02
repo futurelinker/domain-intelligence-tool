@@ -11,23 +11,38 @@
    ============================================ */
 :root {
   /* Backgrounds */
-  --bg-primary: #0a0a0a;
+  /* --bg-primary: #0a0a0a;
   --bg-secondary: #1a1a1a;
-  --bg-card: #1a1a1a;
+  --bg-card: #1a1a1a; */
   
   /* Accent */
-  --accent-green: #c5d5b8;
-  --accent-green-dark: #b0c5a3;
+  /* --accent-green: #c5d5b8;
+  --accent-green-dark: #b0c5a3; */
+
+    /* Backgrounds - Dark Blue Theme (like dashboard but darker) */
+  --bg-primary: #0a0a1a;        /* Very dark blue-purple */
+  --bg-secondary: #131322;      /* Dark blue-purple */
+  --bg-card: #1a1a2e;           /* Card dark blue */
+  
+  /* Accent - Vibrant Purple (like upload button) */
+  --accent-primary: #8b5cf6;     /* Vibrant purple */
+  --accent-primary-dark: #7c3aed; /* Darker purple hover */
+  --accent-primary-light: #a78bfa; /* Lighter purple */
   
   /* Borders */
-  --border-color: #2a2a2a;
-  --border-subtle: #1f1f1f;
+  /* --border-color: #2a2a2a;
+  --border-subtle: #1f1f1f; */
+
+  /* Borders - Purple tint */
+  --border-color: #2a2a44;       /* Dark purple-gray */
+  --border-subtle: #1f1f33;      /* Darker purple-gray */
   
   /* Text */
   --text-primary: #f5f5f5;
   --text-secondary: #a0a0a0;
   --text-muted: #666666;
-  --text-on-accent: #1a1a1a;
+  /* --text-on-accent: #1a1a1a; */
+  --text-on-accent: #ffffff;     /* White text on purple */
   
   /* Status Colors */
   --status-success: #4ade80;
@@ -216,16 +231,18 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 
-/* Green accent (Hosting card) */
 .dark-card.card-accent {
-  background: rgba(197, 213, 184, 0.05);
-  border-color: rgba(197, 213, 184, 0.3);
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
 .dark-card.card-accent:hover {
-  background: rgba(197, 213, 184, 0.08);
-  border-color: rgba(197, 213, 184, 0.4);
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
 }
+
+
 
 /* ============================================
    CARD TITLES
@@ -305,9 +322,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .accent-card {
-  background: var(--accent-green);
+  background: var(--accent-primary );
   color: var(--text-on-accent);
-  border: 1px solid var(--accent-green-dark);
+  border: 1px solid var(--accent-primary-dark);
 }
 
 .card-title {
@@ -320,13 +337,57 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
+  /* Match .data-label styling exactly */
+  font-size: 0.75rem;           /* Same as data-label */
+  color: var(--text-muted);     /* Same muted gray */
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 600;
+  
+  /* Dark box styling */
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Technology section container - wraps title + badges */
+.tech-section-box {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* CMS section with purple accent */
+.tech-section-box.cms-accent {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Section title inside the box */
+.tech-section-box .section-title {
+  /* Keep data-label styling */
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  
+  /* Remove box styling (now on parent) */
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Technology badges container */
+.tech-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* ============================================
@@ -355,8 +416,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--accent-green);
-  box-shadow: 0 0 0 3px rgba(197, 213, 184, 0.1);
+  background: var(--bg-primary);  /* Keep same background */
+  border-color: var(--accent-primary);  /* Purple border */
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);  /* Subtle purple glow */
 }
 
 .search-input::placeholder {
@@ -364,7 +426,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .search-button {
-  background: var(--accent-green);
+  background: var(--accent-primary);
   color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
@@ -378,9 +440,34 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .search-button:hover {
-  background: var(--accent-green-dark);
+  background: var(--accent-primary-dark);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(197, 213, 184, 0.3);
+}
+
+.search-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* Purple glow effect */
+.search-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  padding: 2px;
+  background: linear-gradient(45deg, #8b5cf6, #a78bfa);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.search-button:hover::before {
+  opacity: 0.5;
 }
 
 .search-button:active {
@@ -573,6 +660,49 @@ h1, h2, h3, h4, h5, h6 {
 
 .chevron.rotate {
   transform: rotate(180deg);
+}
+
+/* ============================================
+   SSL COLLAPSIBLE SECTIONS
+   ============================================ */
+
+.ssl-collapsible-section {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.ssl-collapsible-header {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.ssl-collapsible-header:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.ssl-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-primary);
+  transition: transform 0.2s ease;
+}
+
+.ssl-chevron.rotate {
+  transform: rotate(180deg);
+}
+
+.ssl-collapsible-content {
+  padding: 0 1rem 1rem 1rem;
 }
 
 /* ============================================

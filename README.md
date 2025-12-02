@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)](CHANGELOG.md)
 [![Grid Layout](https://img.shields.io/badge/layout-3--column%20grid-c5d5b8.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
@@ -17,6 +17,40 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 ---
 
 ## ✨ Features
+
+### Current Features (v2.9.0)
+
+- ✅ **Modern Purple Theme**
+  - Vibrant purple accent color
+  - Dark blue-purple background
+  - Professional appearance
+
+### Visual Design (v2.9.0)
+
+**Modern Purple Theme:**
+- Vibrant purple accent (#8b5cf6) throughout interface
+- Dark blue-purple background for professional look
+- Enhanced hover effects and transitions
+- Consistent with modern web design patterns
+
+**3-Column Grid Layout:**
+- Row 1: WHOIS | DNS Records | Hosting (purple accent)
+- Row 2: SSL (2/3 width) | Technologies (1/3 width)
+- Row 3: DNS Propagation (full width, collapsible)
+- Responsive: 3 columns → 2 columns → 1 column
+
+**Enhanced Sections:**
+- SSL: Collapsible Certificate Covers & Chain
+- Technologies: Unified boxes with CMS purple accent
+- DNS Propagation: Consistent formatting, bigger badges
+- Input fields: Focus highlights border only (no background change)
+
+**Design Improvements:**
+- Larger rounded corners (24px)
+- Soft shadows with hover lift effects
+- Purple-tinted accent cards
+- Better visual hierarchy
+
 
 ### Current Features (v2.8.0)
 

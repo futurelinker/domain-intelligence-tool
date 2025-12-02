@@ -64,6 +64,21 @@ function toggleSection(sectionId) {
   }
 }
 
+// Toggle SSL collapsible sections
+function toggleSSLSection(contentId) {
+  const content = document.getElementById(contentId);
+  const chevronId = contentId.replace('Content', 'Chevron');
+  const chevron = document.getElementById(chevronId);
+  
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    if (chevron) chevron.classList.add('rotate');
+  } else {
+    content.style.display = 'none';
+    if (chevron) chevron.classList.remove('rotate');
+  }
+}
+
 // ============================================
 // LOAD VERSION
 // ============================================
@@ -524,7 +539,7 @@ function displaySinglePropagation(recordType, propagationData) {
   // Percentage badge (design system)
   const percentageBadge = document.getElementById(`${recordType}PercentageBadge`);
   percentageBadge.textContent = `${analysis.percentage}%`;
-  percentageBadge.style.cssText = 'font-family: "Space Mono", monospace; font-weight: 700; color: var(--accent-green);';
+  percentageBadge.style.cssText = 'font-family: "Space Mono", monospace; font-weight: 700; color: var(--text-primary);';
   
   // Server count (design system)
   const serverCount = document.getElementById(`${recordType}ServerCount`);
@@ -780,8 +795,14 @@ function displaySSLResults(response) {
   document.getElementById('sslDaysRemaining').textContent = 
     days >= 0 ? `${days} days` : 'Expired';
 
-// Subject Alternative Names (design system styling)
+    // Subject Alternative Names (design system styling)
   const sansDiv = document.getElementById('sslSANs');
+  
+  if (!sansDiv) {
+    console.error('sslSANs element not found!');
+    return;
+  }
+  
   sansDiv.innerHTML = '';
   
   if (data.subjectAltNames && data.subjectAltNames.length > 0) {
@@ -795,15 +816,30 @@ function displaySSLResults(response) {
     sansDiv.innerHTML = '<span style="color: var(--text-muted); font-size: 0.875rem;">No alternative names</span>';
   }
 
-// Certificate Chain - COMPACT VERSION
+  // Set SANs count badge for collapsible header
+  const sansCountBadge = document.getElementById('sslSANsCount');
+  if (sansCountBadge) {
+    const count = data.subjectAltNames ? data.subjectAltNames.length : 0;
+    sansCountBadge.textContent = `${count} domain${count !== 1 ? 's' : ''}`;
+  }
+
+  // Certificate Chain - COMPACT VERSION
   const chainDiv = document.getElementById('sslChain');
+  
+  if (!chainDiv) {
+    console.error('sslChain element not found!');
+    return;
+  }
+  
   const chainCountElement = document.getElementById('sslChainCount');
   chainDiv.innerHTML = '';
   
   if (data.chain && data.chain.length > 0) {
-    chainCountElement.textContent = `${data.chain.length} certificate${data.chain.length > 1 ? 's' : ''}`;
-    chainCountElement.className = 'status-badge status-info';
-    
+    if (chainCountElement) {
+      chainCountElement.textContent = `${data.chain.length} certificate${data.chain.length > 1 ? 's' : ''}`;
+      chainCountElement.className = 'status-badge status-info';
+    }
+
     data.chain.forEach((cert, index) => {
       const chainItem = document.createElement('div');
       

@@ -16,6 +16,128 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.9.0] - December 2, 2025
+
+### Added
+- **Purple Theme (Modern Redesign)**
+  - Vibrant purple accent color (#8b5cf6) like modern upload buttons
+  - Dark blue-purple background (#0a0a1a) for professional look
+  - Purple tinted borders and hover effects
+  - Green accent changed to purple throughout
+  
+- **SSL Collapsible Sections**
+  - Certificate Covers section is now collapsible with click-to-expand
+  - Certificate Chain section is now collapsible
+  - Count badges show number of domains/certificates
+  - Chevron indicators for expand/collapse state
+  - Purple tinted background inside collapsed sections
+  
+- **Technologies Section Unified Boxes**
+  - Each category (CMS, Web Server, etc.) in its own dark box
+  - Title and badges now in the same container
+  - CMS section has purple accent (like Hosting card)
+  - Titles styled like data-labels (small, uppercase, muted)
+  - Clean, organized appearance
+
+### Changed
+- **Layout Restructure**
+  - Row 2: SSL moved to left (2/3 width), Technologies to right (1/3 width)
+  - SSL gets more space for certificate details
+  - Technologies condensed but still readable
+  
+- **Color System Overhaul**
+  - Primary accent: #8b5cf6 (vibrant purple)
+  - Background: #0a0a1a (dark blue-purple)
+  - Borders: #2a2a44 (purple-tinted gray)
+  - Hosting card: Purple accent instead of green
+  - Search button: Purple with glow effect
+  - All status indicators maintain their colors (success=green, warning=yellow)
+  
+- **DNS Propagation Section Enhanced**
+  - Consistent formatting across all 4 record types (A, NS, MX, TXT)
+  - Record type badges 25% larger (50px vs 40px)
+  - Record titles bigger and white (1rem, bright)
+  - Increased spacing between dropdowns (1.5rem)
+  - Purple percentage indicators
+  - Purple hover effects
+  
+- **Input Field Improvements**
+  - Focus no longer changes background color
+  - Only border highlights on focus (purple glow)
+  - Better user experience when typing
+  
+- **Button Styling**
+  - Purple background with gradient glow effect
+  - Enhanced hover state with stronger shadow
+  - Consistent with modern UI patterns
+
+### Fixed
+- **WHOIS Card Visibility**
+  - Fixed card not appearing after lookup
+  - Corrected show/hide methods to use style.display
+  - Consistent visibility control across all sections
+  
+- **SSL Section Issues**
+  - Certificate Covers count badge now displays correctly
+  - Certificate Chain was already working correctly
+  - SANs count shows "X domains" format
+  - Collapsible sections properly toggle
+  
+- **DNS Propagation Consistency**
+  - Removed duplicate dark-card wrappers
+  - All 4 record types now have identical structure
+  - Fixed A record formatting mismatch
+  - Consistent spacing and sizing
+  
+- **API Endpoints**
+  - Added /api/version endpoint (fixes 404 errors)
+  - Version now displays correctly in footer
+  
+- **Subdomain Banner**
+  - Added missing dynamic elements (subdomainName, rootDomainName)
+  - "Lookup Root Domain" button now functional
+  - No more null reference errors
+
+### Technical Improvements
+- **CSS Architecture**
+  - New color variables (--accent-primary, --accent-primary-dark)
+  - .tech-section-box class for unified technology boxes
+  - .cms-accent class for purple-tinted CMS section
+  - .ssl-collapsible-section for expandable SSL sections
+  - .tech-badges class for consistent badge layout
+  
+- **JavaScript Updates**
+  - toggleSSLSection() function for SSL collapsibles
+  - Improved SANs count badge population
+  - Consistent visibility methods using style.display
+  
+- **HTML Structure**
+  - Cleaner DNS Propagation section (no nested dark-cards)
+  - SSL sections wrapped in collapsible containers
+  - Technologies sections in unified boxes
+  - Better semantic structure
+
+### Design Metrics
+- **Visual Impact:**
+  - Purple theme: More modern and professional
+  - 3-column grid: Better space utilization
+  - Unified boxes: Cleaner, more organized
+  - Collapsible SSL: Reduced visual clutter
+  
+- **User Experience:**
+  - Input focus: Less distracting
+  - DNS Propagation: Easier to scan
+  - Technologies: Better categorization
+  - SSL: More compact when collapsed
+
+### Backwards Compatibility
+- ✅ All existing functionality preserved
+- ✅ No breaking changes
+- ✅ API responses unchanged
+- ✅ JavaScript functions compatible
+
+---
+
 ## [2.8.0] - November 29, 2025
 
 ### Added
@@ -550,6 +672,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.9.0   | Nov 29, 2025  | Visual Update    | Purple theme + UI improvements           |
 | 2.8.0   | Nov 29, 2025  | Grid Layout      | 3-column dashboard + bug fixes           |
 | 2.7.0   | Nov 28, 2025  | UI Redesign      | Complete dashboard redesign              |
 | 2.6.0   | Nov 19, 2025  | Stage 7          | CMS/Technology Detection                 |
