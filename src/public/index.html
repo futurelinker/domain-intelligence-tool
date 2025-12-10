@@ -52,7 +52,13 @@
         <!-- Overview Header -->
         <div class="overview-header">
             <h2 class="overview-title">Overview</h2>
-            <span class="overview-date" id="currentDate"></span>
+            <div class="overview-date">
+                <span id="currentDate"></span>
+                <button id="themeToggle" class="theme-toggle" title="Toggle light/dark theme">
+                    <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+                    <span class="theme-toggle-text" id="themeText">Dark</span>
+                </button>
+            </div>
         </div>
 
         <!-- Search Section -->
@@ -234,10 +240,9 @@
             <!-- 3. Hosting Provider -->
             <div id="hostingResults" class="grid-third" style="display: none;">
                 <div class="dark-card">
-
                     <h3 class="card-title">Hosting & Network</h3>
                     <!-- Provider Highlight -->
-                    <div class="accent-card mb-6" style="padding: 1.5rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
+                    <div class="mb-6" style="padding: 1.5rem; border-radius: var(--radius-md); display: flex; align-items: center; gap: 1rem;">
                         <div style="font-size: 3rem; line-height: 1;">🌐</div>
                         <div style="flex: 1;">
                             <div id="hostingProvider" style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem;"></div>
@@ -408,7 +413,7 @@
 
                     <!-- CMS (Featured) - WITH ACCENT -->
                     <div id="techCMSSection" class="hidden">
-                        <div class="tech-section-box cms-accent">
+                        <div class="tech-section-box">
                             <div class="section-title">Content Management System</div>
                             <div id="techCMS" class="tech-badges"></div>
                         </div>

@@ -11,13 +11,9 @@
    ============================================ */
 :root {
   /* Backgrounds */
-  /* --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
-  --bg-card: #1a1a1a; */
+
   
   /* Accent */
-  /* --accent-green: #c5d5b8;
-  --accent-green-dark: #b0c5a3; */
 
     /* Backgrounds - Dark Blue Theme (like dashboard but darker) */
   --bg-primary: #0a0a1a;        /* Very dark blue-purple */
@@ -29,9 +25,6 @@
   --accent-primary-dark: #7c3aed; /* Darker purple hover */
   --accent-primary-light: #a78bfa; /* Lighter purple */
   
-  /* Borders */
-  /* --border-color: #2a2a2a;
-  --border-subtle: #1f1f1f; */
 
   /* Borders - Purple tint */
   --border-color: #2a2a44;       /* Dark purple-gray */
@@ -59,6 +52,31 @@
   /* Shadows */
   --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+   --transition-theme: all 0.3s ease;
+}
+
+/* ============================================
+   LIGHT THEME
+   ============================================ */
+[data-theme="light"] {
+  /* Backgrounds - Light */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  
+  /* Borders */
+  --border-color: #e5e7eb;
+  --border-subtle: #f3f4f6;
+  
+  /* Text */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-on-accent: #ffffff;
+  
+  /* Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================
@@ -77,6 +95,8 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: var(--transition-theme);  /* ADD THIS LINE */
+
 }
 
 /* ============================================
@@ -91,6 +111,40 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   line-height: 1.2;
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: var(--transition-theme);
+}
+
+.theme-toggle:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.theme-toggle-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* ============================================
@@ -303,6 +357,9 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Space Mono', monospace;
   font-size: 1rem;
   color: var(--text-secondary);
+  display: flex;  
+  align-items: center;     
+  gap: 1rem;     
 }
 
 /* ============================================

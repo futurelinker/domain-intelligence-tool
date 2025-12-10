@@ -16,6 +16,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.10.0] - December 9, 2025
+
+### Added
+- **Light/Dark Theme Toggle**
+  - Toggle button next to date in overview header
+  - Light theme with clean white backgrounds
+  - Same purple accent (#8b5cf6) in both themes
+  - Smooth 0.3s transitions between themes
+  - Theme preference saved in localStorage
+  - Button shows destination theme (UX improvement)
+  - Purple button background in light mode for visibility
+
+### Changed
+- **Card Styling Normalization**
+  - Removed purple accent from Hosting card
+  - Removed purple accent from CMS section
+
+### Technical
+- Added CSS `[data-theme="light"]` variables
+- Added theme toggle JavaScript functions
+- Added localStorage persistence for theme preference
+- Updated card CSS classes for consistency
+- Transition variables for smooth theme switching
+
+### Design
+- Light theme backgrounds: #ffffff, #f8f9fa
+- Light theme text: #1f2937, #6b7280
+- Purple accent preserved in both themes
+- Lighter shadows for light mode
+
+---
+
 ## [2.9.0] - December 2, 2025
 
 ### Added
@@ -672,13 +704,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.10.0  | Dic 9,  2025  | Visual Update    | Light/Dark Theme Toggle                  |
 | 2.9.0   | Nov 29, 2025  | Visual Update    | Purple theme + UI improvements           |
 | 2.8.0   | Nov 29, 2025  | Grid Layout      | 3-column dashboard + bug fixes           |
 | 2.7.0   | Nov 28, 2025  | UI Redesign      | Complete dashboard redesign              |
 | 2.6.0   | Nov 19, 2025  | Stage 7          | CMS/Technology Detection                 |
 | 2.5.0   | Nov 19, 2025  | Stage 6          | Hosting Provider Detection               |
 | 2.4.0   | Nov 16, 2025  | Stage 5          | SSL/TLS Certificate Analysis             |
-| 2.3.0   | Oct 16, 2025  | Improvements     | Brazilian domains, Multi-record propagation, Subdomain detection |
+| 2.3.0   | Oct 16, 2025  | Improvements     | Br domains, Multi-record propagation, Subdomain detection |
 | 2.2.0   | Oct 16, 2025  | Stage 4          | DNS Propagation Checker                  |
 | 2.1.0   | Oct 15, 2025  | Stage 3          | DNS Records Query                        |
 | 2.0.0   | Oct 10, 2025  | Stage 2          | WHOIS Lookup + UI Improvements           |

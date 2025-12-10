@@ -1,4 +1,47 @@
 // ============================================
+// THEME TOGGLE (DARK/LIGHT)
+// ============================================
+
+// Initialize theme from localStorage or default to dark
+function initializeTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeButton(savedTheme);
+}
+
+// Update theme button appearance
+function updateThemeButton(theme) {
+  const themeIcon = document.getElementById('themeIcon');
+  const themeText = document.getElementById('themeText');
+  
+  if (themeIcon && themeText) {
+    // Show what you'll GET when you click, not what's current
+    if (theme === 'light') {
+      themeIcon.textContent = '🌙';      // Show moon (will switch TO dark)
+      themeText.textContent = 'Dark';
+    } else {
+      themeIcon.textContent = '☀️';      // Show sun (will switch TO light)
+      themeText.textContent = 'Light';
+    }
+  }
+}
+
+// Toggle theme
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeButton(newTheme);
+  
+  console.log(`🎨 Theme switched to: ${newTheme}`);
+}
+
+// Initialize theme on page load
+initializeTheme();
+
+// ============================================
 // REAL-TIME CLOCKS & DATE
 // ============================================
 
@@ -1306,3 +1349,14 @@ async function loadVersion() {
 
 // Call on page load
 window.addEventListener('DOMContentLoaded', loadVersion);
+
+// ============================================
+// THEME TOGGLE EVENT LISTENER
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+    console.log('🎨 Theme toggle initialized');
+  }
+});

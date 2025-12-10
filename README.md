@@ -2,7 +2,7 @@
 
 > Automated domain analysis tool for Customer Success workflows
 
-[![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.0-blue.svg)](CHANGELOG.md)
 [![Grid Layout](https://img.shields.io/badge/layout-3--column%20grid-c5d5b8.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](package.json)
@@ -19,6 +19,11 @@ This tool automates daily domain intelligence gathering by consolidating WHOIS l
 ## ✨ Features
 
 ### Current Features (v2.9.0)
+
+- ✅ **Light/Dark Theme Toggle**
+  - Switch between light and dark themes
+  - Purple accent preserved in both themes
+  - Preference saved automatically
 
 - ✅ **Modern Purple Theme**
   - Vibrant purple accent color
@@ -319,6 +324,6 @@ Upcoming Features
  Stage 8: Website Screenshots
 
 
-**Last Updated:** November 19, 2025
-**Version: 2.6.0**
-**Status:** Production (Stage 7 Complete - CMS/Technology Detection)
+**Last Updated:** December 9, 2025
+**Version: 2.10.0**
+**Status:** Production (Light/Dark Theme Toggle)
