@@ -44,10 +44,52 @@ export function getRootDomain(domain) {
   
   // Handle special multi-part TLDs
   const specialTLDs = [
-    '.com.br', '.com.ar', '.com.mx', '.co.uk', 
-    '.com.au', '.co.za', '.com.co'
+    // South America
+    '.com.br', '.net.br', '.org.br', '.gov.br',
+    '.com.ar', '.gov.ar', '.org.ar',
+    '.com.mx', '.gob.mx', '.org.mx',
+    '.com.co', '.gov.co', '.org.co',
+    '.com.cl', '.gob.cl', '.org.cl',
+    '.com.pe', '.gob.pe', '.org.pe',
+    '.com.ve', '.gob.ve', '.org.ve',
+    
+    // Europe
+    '.co.uk', '.gov.uk', '.org.uk', '.ac.uk', '.net.uk',
+    '.co.de', '.gov.de',
+    '.co.fr', '.gouv.fr',
+    '.co.es', '.gob.es',
+    '.co.it', '.gov.it',
+    '.co.pl', '.gov.pl',
+    '.co.ru', '.gov.ru',
+    
+    // Asia
+    '.co.jp', '.ne.jp', '.or.jp', '.go.jp', '.ac.jp',
+    '.co.kr', '.go.kr', '.or.kr', '.ac.kr',
+    '.com.cn', '.gov.cn', '.org.cn', '.net.cn',
+    '.co.in', '.gov.in', '.org.in', '.net.in', '.ac.in',
+    '.co.id', '.go.id', '.or.id', '.ac.id',
+    '.co.th', '.go.th', '.or.th', '.ac.th',
+    '.com.sg', '.gov.sg', '.org.sg',
+    
+    // Oceania
+    '.com.au', '.gov.au', '.org.au', '.net.au', '.edu.au',
+    '.co.nz', '.govt.nz', '.org.nz', '.net.nz', '.ac.nz',
+    
+    // Africa
+    '.co.za', '.gov.za', '.org.za', '.net.za', '.ac.za',
+    '.co.ke', '.go.ke', '.or.ke', '.ac.ke',
+    '.com.ng', '.gov.ng', '.org.ng',
+    
+    // Middle East
+    '.co.il', '.gov.il', '.org.il', '.ac.il',
+    '.com.tr', '.gov.tr', '.org.tr',
+    '.co.ae', '.gov.ae', '.org.ae',
+    '.com.sa', '.gov.sa', '.org.sa',
+    
+    // North America (Canada)
+    '.co.ca', '.gc.ca', '.on.ca', '.qc.ca'
   ];
-  
+
   // Check if domain ends with a special TLD
   for (const tld of specialTLDs) {
     if (domain.endsWith(tld)) {

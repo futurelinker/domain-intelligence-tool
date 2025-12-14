@@ -16,6 +16,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.10.1] - December 14, 2025
+
+### Security (CRITICAL PATCH)
+- **Fixed SSRF Vulnerability (VULN-01)** - High severity
+  - Validates all domains resolve to public IPs only
+  - Blocks localhost (127.0.0.0/8), private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
+  - Blocks link-local addresses (169.254.0.0/16) - prevents AWS metadata access
+  - Blocks multicast and reserved ranges
+  - Prevents server from being used to attack internal networks
+  
+- **Added Input Validation (VULN-02)** - Medium severity
+  - Strict domain format validation with regex
+  - Rejects malformed inputs, special characters, and injection attempts
+  - Maximum length validation (253 chars for FQDN)
+  - Prevents consecutive dots and invalid domain patterns
+  
+- **Implemented Rate Limiting (VULN-03)** - Medium severity
+  - **App-level**: 50 requests per 15 minutes per IP (express-rate-limit)
+  - **Server-level**: 10 requests per minute per IP (Nginx)
+  - Custom 429 error responses with retry information
+  - Health endpoint excluded from rate limiting
+  - Prevents DoS, mass scanning, and resource exhaustion
+  
+- **Generic Error Messages (VULN-05)** - Low severity
+  - Sensitive error details only logged server-side
+  - User-facing errors are generic to prevent information leakage
+  - No stack traces or file paths exposed
+  
+- **Expanded TLD Parsing (VULN-06)** - Low severity
+  - Expanded from 7 to 80+ country-code TLDs
+  - Better subdomain detection globally
+  - Support for multi-part TLDs (.com.br, .co.uk, .gov.au, etc.)
+
+### Added
+- **Security Module** (`src/security.js`)
+  - Centralized security functions
+  - `isValidDomain()` - Domain format validation
+  - `isPrivateIP()` - Private IP range detection
+  - `validateDomainSSRF()` - DNS resolution with SSRF protection
+  - `validateDomainMiddleware()` - Express middleware for all endpoints
+
+### Changed
+- All API endpoints now use security validation middleware
+- Error responses include both `error` and `message` fields
+- Frontend displays detailed error messages (error + message)
+- Removed redundant input validation from individual endpoints
+
+### Technical
+- **New dependency**: `express-rate-limit@^7.1.5`
+- **New module**: `src/security.js` (zero additional dependencies for SSRF protection)
+- **Updated**: All 7 API endpoints with validation middleware
+- **Updated**: Nginx configuration with rate limiting
+- **Enhanced**: Frontend error handling and display
+
+### Protection Layers
+1. **Cloudflare** (recommended): DDoS, bot protection, WAF rules
+2. **Nginx**: 10 requests/minute per IP
+3. **Express**: 50 requests/15min per IP + SSRF + input validation
+
+### Addressed Security Audit
+This release addresses findings from security audit dated 2025-12-02:
+- ✅ VULN-01: Server-Side Request Forgery (SSRF) - **FIXED**
+- ✅ VULN-02: Lack of Input Validation - **FIXED**
+- ✅ VULN-03: Missing Rate Limiting - **FIXED**
+- ⚠️ VULN-04: Missing Authentication - **NOT IMPLEMENTED** (public tool by design)
+- ✅ VULN-05: Verbose Error Messages - **FIXED**
+- ✅ VULN-06: Incomplete TLD Parsing - **FIXED**
+
+### Deployment Notes
+- Requires Nginx configuration update (see deployment guide)
+- Optional: Cloudflare setup for additional protection
+- No breaking changes - fully backward compatible
+
+---
+
 ## [2.10.0] - December 9, 2025
 
 ### Added
@@ -704,6 +779,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date          | Stage            | Description                              |
 |---------|---------------|------------------|------------------------------------------|
+| 2.10.1  | Dic 14, 2025  | Security         | Security Hardened                        |
 | 2.10.0  | Dic 9,  2025  | Visual Update    | Light/Dark Theme Toggle                  |
 | 2.9.0   | Nov 29, 2025  | Visual Update    | Purple theme + UI improvements           |
 | 2.8.0   | Nov 29, 2025  | Grid Layout      | 3-column dashboard + bug fixes           |

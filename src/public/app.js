@@ -266,19 +266,28 @@ const [whoisResponse, dnsResponse, propagationResponse, sslResponse, hostingResp
     const hostingData = await hostingResponse.json();
     const technologyData = await technologyResponse.json();
 
-
     // Check for errors
     if (!whoisResponse.ok || !whoisData.success) {
-      throw new Error(whoisData.error || 'WHOIS lookup failed');
+      const err = new Error(whoisData.error || 'WHOIS lookup failed');
+      err.error = whoisData.error;
+      err.message = whoisData.message;
+      throw err;
     }
 
     if (!dnsResponse.ok || !dnsData.success) {
-      throw new Error(dnsData.error || 'DNS query failed');
+      const err = new Error(dnsData.error || 'DNS query failed');
+      err.error = dnsData.error;
+      err.message = dnsData.message;
+      throw err;
     }
 
     if (!propagationResponse.ok || !propagationData.success) {
-      throw new Error(propagationData.error || 'Propagation check failed');
+      const err = new Error(propagationData.error || 'Propagation check failed');
+      err.error = propagationData.error;
+      err.message = propagationData.message;
+      throw err;
     }
+    
     // SSL is optional - don't throw error if it fails
     if (!sslResponse.ok || !sslData.success) {
       console.warn('SSL check failed:', sslData.error);
@@ -332,7 +341,13 @@ const [whoisResponse, dnsResponse, propagationResponse, sslResponse, hostingResp
     }
 
   } catch (err) {
+  // If it's an API error with both error and message fields, pass both
+  if (err.error && err.message) {
+    showError(err.error, err.message);
+  } else {
+    // Otherwise just show the error message
     showError(err.message);
+  }
   } finally {
     // Hide loading
     loading.classList.add('hidden');
@@ -718,13 +733,22 @@ function formatDate(dateStr) {
   }
 }
 
-function showError(message) {
-  console.log('❌ showError called with:', message);
+function showError(error, message) {
+  console.log('❌ showError called with:', { error, message });
   
   const errorEl = document.getElementById('error');
   if (errorEl) {
     errorEl.classList.remove('hidden');
-    errorEl.textContent = message;
+    
+    // Build error HTML
+    let errorHTML = `<strong>Error:</strong> ${error || 'An error occurred'}`;
+    
+    // Add detailed message if provided
+    if (message) {
+      errorHTML += `<br><span style="color: var(--text-secondary); font-size: 0.875rem;">${message}</span>`;
+    }
+    
+    errorEl.innerHTML = errorHTML;
   }
   
   const loadingEl = document.getElementById('loading');

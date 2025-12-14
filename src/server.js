@@ -9,7 +9,8 @@ import { readFileSync } from 'fs';
 import { checkSSL } from './ssl.js';
 import { detectHosting } from './hosting.js';
 import { detectTechnologies } from './technology.js';
-
+import rateLimit from 'express-rate-limit';
+import { validateDomainMiddleware } from './security.js';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -19,11 +20,34 @@ const __dirname = path.dirname(__filename);
 const VERSION = readFileSync(path.join(__dirname, '../VERSION'), 'utf8').trim();
 console.log(`📌 Version: ${VERSION}`);
 
+// ============================================
+// RATE LIMITING CONFIGURATION
+// ============================================
+
+// Conservative rate limiting for public API
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 requests per window per IP
+  message: {
+    success: false,
+    error: 'Too many requests',
+    message: 'You have exceeded the rate limit. Please try again in 15 minutes.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  // Skip rate limiting for health check
+  skip: (req) => req.path === '/api/health'
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Parse JSON bodies
 app.use(express.json());
+
+// Apply rate limiting to all API routes
+app.use('/api', apiLimiter);
 
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -46,17 +70,9 @@ app.get('/api/version', (req, res) => {
 });
 
 // WHOIS lookup endpoint
-app.post('/api/whois', async (req, res) => {
+app.post('/api/whois', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
-
-    // Validate input
-    if (!domain) {
-      return res.status(400).json({
-        error: 'Domain is required',
-        message: 'Please provide a domain name'
-      });
-    }
 
     console.log(`📥 WHOIS request for: ${domain}`);
 
@@ -82,14 +98,15 @@ app.post('/api/whois', async (req, res) => {
     console.error('WHOIS API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // DNS query endpoint
-app.post('/api/dns', async (req, res) => {
+app.post('/api/dns', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -117,14 +134,15 @@ app.post('/api/dns', async (req, res) => {
     console.error('DNS API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // DNS propagation check endpoint
-app.post('/api/propagation', async (req, res) => {
+app.post('/api/propagation', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
     
@@ -152,14 +170,15 @@ app.post('/api/propagation', async (req, res) => {
     console.error('Propagation API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // DNS Propagation ALL record types endpoint
-app.post('/api/propagation-all', async (req, res) => {
+app.post('/api/propagation-all', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -187,14 +206,15 @@ app.post('/api/propagation-all', async (req, res) => {
     console.error('Propagation-all API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // SSL Certificate check endpoint
-app.post('/api/ssl', async (req, res) => {
+app.post('/api/ssl', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -222,14 +242,15 @@ app.post('/api/ssl', async (req, res) => {
     console.error('SSL API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+       error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // Hosting provider detection endpoint
-app.post('/api/hosting', async (req, res) => {
+app.post('/api/hosting', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -257,14 +278,15 @@ app.post('/api/hosting', async (req, res) => {
     console.error('Hosting API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // Technology detection endpoint
-app.post('/api/technology', async (req, res) => {
+app.post('/api/technology', validateDomainMiddleware, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -292,7 +314,8 @@ app.post('/api/technology', async (req, res) => {
     console.error('Technology API error:', error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',  // ← Generic message
+      message: 'An error occurred while processing your request. Please try again later.',
       timestamp: new Date().toISOString()
     });
   }
