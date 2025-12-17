@@ -122,6 +122,21 @@ function toggleSSLSection(contentId) {
   }
 }
 
+// Toggle DNS collapsible sections
+function toggleDNSSection(contentId) {
+  const content = document.getElementById(contentId);
+  const chevronId = contentId.replace('Content', 'Chevron');
+  const chevron = document.getElementById(chevronId);
+  
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    if (chevron) chevron.classList.add('rotate');
+  } else {
+    content.style.display = 'none';
+    if (chevron) chevron.classList.remove('rotate');
+  }
+}
+
 // ============================================
 // LOAD VERSION
 // ============================================
@@ -494,22 +509,40 @@ function displayDnsResults(data) {
     `<span class="data-value mono">${record.address}</span>`
   );
 
+  // CNAME Records
+displayRecordList('cnameRecords', data.cname, (record) => 
+  `<span class="data-value mono">${record.cname}</span>`
+);
+
   // MX Records
   displayRecordList('mxRecords', data.mx, (record) => 
     `<span style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">Priority ${record.priority}:</span> <span class="data-value mono">${record.exchange}</span>`
   );
 
-  // TXT Records
-  displayRecordList('txtRecords', data.txt, (record) => {
-    const text = record.text;
-    const truncated = text.length > 100 ? text.substring(0, 100) + '...' : text;
-    return `<span style="color: var(--text-secondary); word-break: break-all; font-size: 0.75rem; font-family: 'Space Mono', monospace; line-height: 1.5;">${escapeHtml(truncated)}</span>`;
-  });
-
-  // NS Records
+    // NS Records
   displayRecordList('dnsNsRecords', data.ns, (record) => 
     `<span class="font-mono text-gray-900">${record.nameserver}</span>`
   );
+
+  // TXT Records (with count badge and collapsible)
+  const txtRecordsDiv = document.getElementById('txtRecords');
+  const txtCountBadge = document.getElementById('txtCount');
+
+  if (data.txt && data.txt.length > 0) {
+    txtCountBadge.textContent = `${data.txt.length} record${data.txt.length !== 1 ? 's' : ''}`;
+    
+    txtRecordsDiv.innerHTML = '';
+    data.txt.forEach(record => {
+      const p = document.createElement('p');
+      p.style.cssText = 'margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);';
+      const text = record.text;
+      p.innerHTML = `<span style="color: var(--text-secondary); word-break: break-all; font-size: 0.75rem; font-family: 'Space Mono', monospace; line-height: 1.5;">${escapeHtml(text)}</span>`;
+      txtRecordsDiv.appendChild(p);
+    });
+  } else {
+    txtCountBadge.textContent = '0 records';
+    txtRecordsDiv.innerHTML = '<p style="font-size: 0.875rem; color: var(--text-muted);">No TXT records found</p>';
+  }
 
   // SOA Record (compact design)
   const soaDiv = document.getElementById('soaRecord');
@@ -566,18 +599,17 @@ function displayDnsResults(data) {
 function displayPropagationResults(data) {
   console.log('📥 displayDnsResults called with data:', data);
   // Display each record type
-  displaySinglePropagation('a', data.a);
-  displaySinglePropagation('ns', data.ns);
-  displaySinglePropagation('mx', data.mx);
-  displaySinglePropagation('txt', data.txt);
-  
+  displaySinglePropagation('a', data.a, data.domain);
+  displaySinglePropagation('ns', data.ns, data.domain);
+  displaySinglePropagation('mx', data.mx, data.domain);
+  displaySinglePropagation('txt', data.txt, data.domain);
   // Show propagation results section
   propagationResults.classList.remove('hidden');
   propagationResults.style.display = 'block';
 }
 
 // Display single record type propagation (compact version)
-function displaySinglePropagation(recordType, propagationData) {
+function displaySinglePropagation(recordType, propagationData, domain) {
   const analysis = propagationData.analysis;
   
   // Status badge (design system)
@@ -599,10 +631,15 @@ function displaySinglePropagation(recordType, propagationData) {
   percentageBadge.textContent = `${analysis.percentage}%`;
   percentageBadge.style.cssText = 'font-family: "Space Mono", monospace; font-weight: 700; color: var(--text-primary);';
   
-  // Server count (design system)
+  // Server count with error info (design system)
   const serverCount = document.getElementById(`${recordType}ServerCount`);
-  serverCount.textContent = `${analysis.respondedServers}/${analysis.totalServers} servers`;
-  serverCount.style.cssText = 'font-size: 0.75rem; color: var(--text-muted);';
+  if (analysis.errorCount > 0) {
+    serverCount.textContent = `${analysis.respondedServers}/${analysis.totalServers} servers (${analysis.errorCount} timeout${analysis.errorCount > 1 ? 's' : ''})`;
+    serverCount.style.cssText = 'font-size: 0.75rem; color: var(--text-muted);';
+  } else {
+    serverCount.textContent = `${analysis.respondedServers}/${analysis.totalServers} servers`;
+    serverCount.style.cssText = 'font-size: 0.75rem; color: var(--text-muted);';
+  }
   
   // Values Summary (design system)
   const valuesDiv = document.getElementById(`${recordType}Values`);
@@ -632,7 +669,7 @@ function displaySinglePropagation(recordType, propagationData) {
   // Server Results (design system cards)
   const serverResults = document.getElementById(`${recordType}ServerResults`);
   serverResults.innerHTML = '';
-  
+
   propagationData.servers.forEach(server => {
     const card = document.createElement('div');
     
@@ -675,8 +712,33 @@ function displaySinglePropagation(recordType, propagationData) {
     
     serverResults.appendChild(card);
   });
+
+  // Add DNSChecker.org link at the bottom
+  const linkDiv = document.createElement('div');
+  linkDiv.style.cssText = 'grid-column: 1 / -1; margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); text-align: center;';
+
+  // Map record types to DNSChecker format
+  const recordTypeMap = {
+    'a': 'A',
+    'ns': 'NS',
+    'mx': 'MX',
+    'txt': 'TXT'
+  };
+
+  const dnsCheckerType = recordTypeMap[recordType] || recordType.toUpperCase();
+  const dnsCheckerUrl = `https://dnschecker.org/#${dnsCheckerType}/${encodeURIComponent(domain)}`;
+
+  linkDiv.innerHTML = `
+    <span style="font-size: 0.75rem; color: var(--text-muted); margin-right: 0.5rem;">Check geographic propagation:</span>
+    <a href="${dnsCheckerUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8125rem; color: var(--accent-primary); text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-primary-dark)'" onmouseout="this.style.color='var(--accent-primary)'">
+      🌍 View ${dnsCheckerType} on DNSChecker.org →
+    </a>
+  `;
+
+  serverResults.appendChild(linkDiv);
+    
+  } // End of displaySinglePropagation
   
-} // End of displaySinglePropagation
 
 // Helper function to display record lists
 function displayRecordList(elementId, records, formatter) {
@@ -1163,13 +1225,25 @@ function displayTechnologyResults(response) {
     
     const data = response.data;
     
-    // Technology count badge (accent green)
+    // Technology count badge (readable in both themes)
     const countBadge = document.getElementById('technologyCount');
     if (countBadge) {
       countBadge.textContent = `${data.total} ${data.total === 1 ? 'technology' : 'technologies'} detected`;
-      countBadge.className = 'px-3 py-1 text-xs font-medium rounded-full';
-      countBadge.style.cssText = 'background: var(--accent-green); color: var(--text-on-accent); border: 1px solid var(--accent-green-dark);';
+      countBadge.className = 'status-badge status-success';
+      countBadge.style.cssText = 'font-size: 0.75rem;';
+          // DEBUG: Log what we're getting
+      console.log('🔍 Technology Detection Debug:');
+      console.log('Total:', data.total);
+      console.log('Categories:', data.categories);
+      console.log('CMS:', data.categories.cms);
+      console.log('Frontend:', data.categories.frontend);
+      console.log('Backend:', data.categories.backend);
+      console.log('Server:', data.categories.server);
+      console.log('Libraries:', data.categories.libraries);
+      console.log('Analytics:', data.categories.analytics);
+      console.log('Ecommerce:', data.categories.ecommerce);
     }
+
 
     // Hide all category sections first
     const sections = ['techCMSSection', 'techFrontendSection', 'techBackendSection', 'techServerSection', 'techLibrariesSection', 'techAnalyticsSection', 'techEcommerceSection', 'techNone'];
@@ -1268,7 +1342,7 @@ function displayCMS(technologies) {
   section.classList.remove('hidden');
 }
 
-// Helper: Display CMS (prominent)
+// Helper: Display CMS (same style as other categories)
 function displayCMS(technologies) {
   const container = document.getElementById('techCMS');
   const section = document.getElementById('techCMSSection');
@@ -1282,21 +1356,38 @@ function displayCMS(technologies) {
     badge.style.cssText = `
       display: flex;
       align-items: center;
-      gap: 1rem;
-      background: var(--accent-green);
-      color: var(--text-on-accent);
-      border: 2px solid var(--accent-green-dark);
-      border-radius: var(--radius-md);
-      padding: 1.25rem 1.75rem;
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 1.25rem;
+      gap: 0.625rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1.125rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      transition: all 0.2s ease;
     `;
     
+    // Add hover effect
+    badge.addEventListener('mouseenter', function() {
+      this.style.borderColor = 'var(--accent-green)';
+      this.style.background = 'rgba(197, 213, 184, 0.05)';
+    });
+    badge.addEventListener('mouseleave', function() {
+      this.style.borderColor = 'var(--border-color)';
+      this.style.background = 'var(--bg-primary)';
+    });
+    
+    // Confidence color (same as other categories)
+    let confidenceStyle = 'background: rgba(197, 213, 184, 0.2); color: var(--accent-green-dark); border: 1px solid var(--accent-green);';
+    if (tech.confidence === 'medium') {
+      confidenceStyle = 'background: rgba(251, 191, 36, 0.15); color: #d97706; border: 1px solid #fbbf24;';
+    } else if (tech.confidence === 'low') {
+      confidenceStyle = 'background: rgba(168, 168, 168, 0.15); color: var(--text-secondary); border: 1px solid var(--border-color);';
+    }
+    
     badge.innerHTML = `
-      <span style="font-size: 2rem;">${tech.icon}</span>
-      <span>${escapeHtml(tech.name)}</span>
-      <span style="font-size: 0.75rem; opacity: 0.8; background: rgba(0,0,0,0.15); padding: 0.375rem 0.625rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.05em;">${tech.confidence}</span>
+      <span style="font-size: 1.5rem; line-height: 1;">${tech.icon}</span>
+      <span style="font-weight: 500; flex: 1;">${escapeHtml(tech.name)}</span>
+      <span style="font-size: 0.6875rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; ${confidenceStyle}">${tech.confidence}</span>
     `;
     
     container.appendChild(badge);

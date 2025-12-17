@@ -241,7 +241,14 @@ function detectFrontend(headers, html) {
   const detected = [];
 
   // React
-  if (html.includes('react') || html.includes('_react') || html.includes('data-reactroot')) {
+  if (html.includes('react') || 
+      html.includes('_react') || 
+      html.includes('data-reactroot') ||
+      html.includes('data-reactid') ||
+      html.includes('__REACT') ||
+      html.includes('react-dom') ||
+      html.includes('/__react') ||
+      headers['x-powered-by']?.toLowerCase().includes('react')) {
     detected.push({ name: 'React', category: 'Frontend', icon: '⚛️', confidence: 'high' });
   }
 

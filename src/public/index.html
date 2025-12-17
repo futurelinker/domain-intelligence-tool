@@ -204,6 +204,12 @@
                             <div id="aaaaRecords" class="space-y-2"></div>
                         </div>
 
+                        <!-- CNAME Records -->
+                        <div class="data-item">
+                            <div class="data-label">CNAME Records</div>
+                            <div id="cnameRecords"></div>
+                        </div>
+
                         <!-- MX Records (Mail) -->
                         <div class="data-item">
                             <p class="data-label">MX Records (Mail)</p>
@@ -222,17 +228,46 @@
                             <div id="caaRecords" class="space-y-2"></div>
                         </div>
 
-                        <!-- SOA Record -->
-                        <div class="data-item">
-                            <p class="data-label">SOA Record</p>
-                            <div id="soaRecord" style="font-size: 0.75rem;"></div>
+                        <!-- SOA Record (Collapsible) -->
+                        <div class="data-item" style="grid-column: 1 / -1;">
+                            <button 
+                                onclick="toggleDNSSection('soaContent')" 
+                                class="ssl-collapsible-header"
+                                style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s ease;"
+                                onmouseover="this.style.borderColor='var(--accent-primary)'" 
+                                onmouseout="this.style.borderColor='var(--border-color)'"
+                            >
+                                <span class="data-label" style="margin: 0;">SOA (Start of Authority)</span>
+                                <svg id="soaChevron" class="chevron" style="width: 20px; height: 20px; color: var(--text-secondary); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="soaContent" style="display: none; margin-top: 0.75rem;">
+                                <div id="soaRecord"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TXT Records (Full Width) -->
-                    <div class="data-item mt-4">
-                        <p class="data-label">TXT Records</p>
-                        <div id="txtRecords" class="space-y-2"></div>
+                    <!-- TXT Records (Collapsible) -->
+                    <div class="data-item" style="grid-column: 1 / -1;">
+                        <button 
+                            onclick="toggleDNSSection('txtContent')" 
+                            class="ssl-collapsible-header"
+                            style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s ease;"
+                            onmouseover="this.style.borderColor='var(--accent-primary)'" 
+                            onmouseout="this.style.borderColor='var(--border-color)'"
+                        >
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="data-label" style="margin: 0;">TXT Records</span>
+                                <span id="txtCount" class="status-badge status-info" style="font-size: 0.6875rem;">0 records</span>
+                            </div>
+                            <svg id="txtChevron" class="chevron" style="width: 20px; height: 20px; color: var(--text-secondary); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="txtContent" style="display: none; margin-top: 0.75rem; padding: 1rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <div id="txtRecords"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -411,7 +446,7 @@
                         <span id="technologyCount" class="status-badge status-info"></span>
                     </div>
 
-                    <!-- CMS (Featured) - WITH ACCENT -->
+                    <!-- CMS (Content Management System) -->
                     <div id="techCMSSection" class="hidden">
                         <div class="tech-section-box">
                             <div class="section-title">Content Management System</div>
@@ -420,13 +455,14 @@
                     </div>
 
                     <!-- Frontend Frameworks -->
-                    <div id="techBackendSection" class="hidden">
+                    <div id="techFrontendSection" class="hidden">
                         <div class="tech-section-box">
-                            <div class="section-title">Backend Technology</div>
-                            <div id="techBackend" class="tech-badges"></div>
+                            <div class="section-title">Frontend Framework</div>
+                            <div id="techFrontend" class="tech-badges"></div>
                         </div>
                     </div>
 
+                    <!-- Backend Technology -->
                     <div id="techBackendSection" class="hidden">
                         <div class="tech-section-box">
                             <div class="section-title">Backend Technology</div>
@@ -442,15 +478,15 @@
                         </div>
                     </div>
 
-                    <!-- Libraries -->
-                    <div id="techAnalyticsSection" class="hidden">
+                    <!-- JavaScript Libraries -->
+                    <div id="techLibrariesSection" class="hidden">
                         <div class="tech-section-box">
-                            <div class="section-title">Analytics & Marketing</div>
-                            <div id="techAnalytics" class="tech-badges"></div>
+                            <div class="section-title">JavaScript Libraries</div>
+                            <div id="techLibraries" class="tech-badges"></div>
                         </div>
                     </div>
 
-                    <!-- Analytics -->
+                    <!-- Analytics & Marketing -->
                     <div id="techAnalyticsSection" class="hidden">
                         <div class="tech-section-box">
                             <div class="section-title">Analytics & Marketing</div>
@@ -477,92 +513,112 @@
             <!-- 5. DNS Propagation Status -->
             <div id="propagationResults" class="grid-full column; gap: 1rem" style="display: none;">
                 <div class="dark-card">
-    <h3 class="card-title">DNS Propagation Status</h3>
-    
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        
-        <!-- A Record -->
-        <div>
-            <button class="collapsible-header" onclick="toggleSection('aDetails')">
-                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                    <span class="status-badge status-info" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">A</span>
-                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">IPv4 Addresses</span>
-                    <span id="aStatusBadge" class="status-badge"></span>
-                    <span id="aPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
-                    <span id="aServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
-                </div>
-                <svg id="aChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div id="aDetails" class="collapsible-content hidden">
-                <div id="aValues" class="mb-4"></div>
-                <div id="aServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
-            </div>
-        </div>
+                    <h3 class="card-title">DNS Propagation Status</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        
+                        <!-- A Record -->
+                        <div>
+                            <button class="collapsible-header" onclick="toggleSection('aDetails')">
+                                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                    <span class="status-badge status-info" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">A</span>
+                                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">IPv4 Addresses</span>
+                                    <span id="aStatusBadge" class="status-badge"></span>
+                                    <span id="aPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
+                                    <span id="aServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                                </div>
+                                <svg id="aChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="aDetails" class="collapsible-content hidden">
+                                <div id="aValues" class="mb-4"></div>
+                                <div id="aServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
+                            </div>
+                        </div>
 
-        <!-- NS Record -->
-        <div>
-            <button class="collapsible-header" onclick="toggleSection('nsDetails')">
-                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                    <span class="status-badge status-success" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">NS</span>
-                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Name Servers</span>
-                    <span id="nsStatusBadge" class="status-badge"></span>
-                    <span id="nsPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
-                    <span id="nsServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
-                </div>
-                <svg id="nsChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div id="nsDetails" class="collapsible-content hidden">
-                <div id="nsValues" class="mb-4"></div>
-                <div id="nsServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
-            </div>
-        </div>
+                        <!-- NS Record -->
+                        <div>
+                            <button class="collapsible-header" onclick="toggleSection('nsDetails')">
+                                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                    <span class="status-badge status-success" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">NS</span>
+                                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Name Servers</span>
+                                    <span id="nsStatusBadge" class="status-badge"></span>
+                                    <span id="nsPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
+                                    <span id="nsServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                                </div>
+                                <svg id="nsChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="nsDetails" class="collapsible-content hidden">
+                                <div id="nsValues" class="mb-4"></div>
+                                <div id="nsServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
+                            </div>
+                        </div>
 
-        <!-- MX Record -->
-        <div>
-            <button class="collapsible-header" onclick="toggleSection('mxDetails')">
-                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                    <span class="status-badge" style="background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid #a855f7; min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">MX</span>
-                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Mail Servers</span>
-                    <span id="mxStatusBadge" class="status-badge"></span>
-                    <span id="mxPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
-                    <span id="mxServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
-                </div>
-                <svg id="mxChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div id="mxDetails" class="collapsible-content hidden">
-                <div id="mxValues" class="mb-4"></div>
-                <div id="mxServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
-            </div>
-        </div>
+                        <!-- MX Record -->
+                        <div>
+                            <button class="collapsible-header" onclick="toggleSection('mxDetails')">
+                                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                    <span class="status-badge" style="background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid #a855f7; min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">MX</span>
+                                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Mail Servers</span>
+                                    <span id="mxStatusBadge" class="status-badge"></span>
+                                    <span id="mxPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
+                                    <span id="mxServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                                </div>
+                                <svg id="mxChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="mxDetails" class="collapsible-content hidden">
+                                <div id="mxValues" class="mb-4"></div>
+                                <div id="mxServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
+                            </div>
+                        </div>
 
-        <!-- TXT Record -->
-        <div>
-            <button class="collapsible-header" onclick="toggleSection('txtDetails')">
-                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                    <span class="status-badge status-warning" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">TXT</span>
-                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Text Records</span>
-                    <span id="txtStatusBadge" class="status-badge"></span>
-                    <span id="txtPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
-                    <span id="txtServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                        <!-- TXT Record -->
+                        <div>
+                            <button class="collapsible-header" onclick="toggleSection('txtDetails')">
+                                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                    <span class="status-badge status-warning" style="min-width: 50px; text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;">TXT</span>
+                                    <span style="font-weight: 600; font-size: 1rem; color: var(--text-primary);">Text Records</span>
+                                    <span id="txtStatusBadge" class="status-badge"></span>
+                                    <span id="txtPercentageBadge" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent-primary);"></span>
+                                    <span id="txtServerCount" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                                </div>
+                                <svg id="txtChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="txtDetails" class="collapsible-content hidden">
+                                <div id="txtValues" class="mb-4"></div>
+                                <div id="txtServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Explanation Note -->
+                    <div style="margin-top: 2rem; padding: 1.25rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); border-left: 3px solid var(--accent-primary);">
+                        <div style="display: flex; align-items: start; gap: 0.75rem;">
+                            <span style="font-size: 1.25rem; line-height: 1; margin-top: 0.125rem;">ℹ️</span>
+                            <div>
+                                <h4 style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">What We're Checking</h4>
+                                <p style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; margin: 0 0 0.75rem 0;">
+                                    We query <strong>11 major public DNS servers</strong> (Google, Cloudflare, Quad9, OpenDNS, etc.) to check if they return consistent DNS records for your domain. This shows DNS server-level propagation.
+                                </p>
+                                <h4 style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">DNS Server Check vs. Geographic Propagation</h4>
+                                <p style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                                    <strong>Our tool</strong> checks if major DNS servers have your records (technical propagation).<br>
+                                    <strong>Geographic tools</strong> (like DNSChecker.org) check from actual locations worldwide (user experience).<br>
+                                    <span style="color: var(--accent-primary); font-weight: 600;">💡 Use both for complete validation!</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <svg id="txtChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div id="txtDetails" class="collapsible-content hidden">
-                <div id="txtValues" class="mb-4"></div>
-                <div id="txtServerResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
-            </div>
-        </div>
-        
-    </div>
-</div>
             </div>
         </div> <!-- End of Dashboard Grid -->
 

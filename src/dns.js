@@ -13,6 +13,7 @@ export async function queryAllRecords(domain) {
     const [
       aRecords,
       aaaaRecords,
+      cnameRecords,
       mxRecords,
       txtRecords,
       nsRecords,
@@ -21,6 +22,7 @@ export async function queryAllRecords(domain) {
     ] = await Promise.allSettled([
       queryARecords(domain),
       queryAAAARecords(domain),
+      queryCNAMERecords(domain),
       queryMXRecords(domain),
       queryTXTRecords(domain),
       queryNSRecords(domain),
@@ -33,6 +35,7 @@ export async function queryAllRecords(domain) {
       domain: domain,
       a: aRecords.status === 'fulfilled' ? aRecords.value : [],
       aaaa: aaaaRecords.status === 'fulfilled' ? aaaaRecords.value : [],
+      cname: cnameRecords.status === 'fulfilled' ? cnameRecords.value : [],
       mx: mxRecords.status === 'fulfilled' ? mxRecords.value : [],
       txt: txtRecords.status === 'fulfilled' ? txtRecords.value : [],
       ns: nsRecords.status === 'fulfilled' ? nsRecords.value : [],
@@ -71,6 +74,21 @@ async function queryAAAARecords(domain) {
   try {
     const addresses = await dnsPromises.resolve6(domain);
     return addresses.map(ip => ({ address: ip }));
+  } catch (error) {
+    if (error.code === 'ENODATA' || error.code === 'ENOTFOUND') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+/**
+ * Query CNAME records
+ */
+async function queryCNAMERecords(domain) {
+  try {
+    const records = await dnsPromises.resolveCname(domain);
+    return records.map(cname => ({ cname: cname }));
   } catch (error) {
     if (error.code === 'ENODATA' || error.code === 'ENOTFOUND') {
       return [];

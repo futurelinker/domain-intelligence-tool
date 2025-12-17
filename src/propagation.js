@@ -388,27 +388,55 @@ async function checkPropagationByType(domain, recordType) {
 } // End of checkPropagationByType
 
 /**
- * Analyze propagation results for any record type
+ * Analyze propagation results for any record type (IMPROVED)
  * @param {Array} serverResults - Results from all servers
  * @param {string} recordType - Type of record being analyzed
  * @returns {Object} - Analysis
  */
 function analyzePropagationByType(serverResults, recordType) {
+  // Separate successful queries from errors/timeouts
   const successfulQueries = serverResults.filter(
     r => r.status === 'success' && r.addresses && r.addresses.length > 0
   );
-
-  if (successfulQueries.length === 0) {
+  
+  const noDataQueries = serverResults.filter(
+    r => r.status === 'no_data'
+  );
+  
+  const errorQueries = serverResults.filter(
+    r => r.status === 'error'
+  );
+  
+  // Calculate responding servers (success + no_data, exclude errors/timeouts)
+  const respondingServers = successfulQueries.length + noDataQueries.length;
+  const totalServers = serverResults.length;
+  
+  // If no servers responded at all
+  if (respondingServers === 0) {
     return {
       isPropagated: false,
       percentage: 0,
-      totalServers: serverResults.length,
+      totalServers: totalServers,
       respondedServers: 0,
+      errorCount: errorQueries.length,
       uniqueValues: [],
       message: `No ${recordType} records found on any DNS server`
     };
   }
-
+  
+  // If no successful queries (all returned no_data)
+  if (successfulQueries.length === 0) {
+    return {
+      isPropagated: true, // Consider it "propagated" if all responding servers agree (no records)
+      percentage: 100,
+      totalServers: totalServers,
+      respondedServers: respondingServers,
+      errorCount: errorQueries.length,
+      uniqueValues: [],
+      message: `No ${recordType} records configured (consistent across all responding servers)`
+    };
+  }
+  
   // Collect unique record sets
   const recordSets = new Map();
   successfulQueries.forEach(result => {
@@ -421,32 +449,45 @@ function analyzePropagationByType(serverResults, recordType) {
     }
     recordSets.get(recordKey).servers.push(result.server);
   });
-
-  // Calculate metrics
-  const totalServers = serverResults.length;
-  const respondedServers = successfulQueries.length;
-  const percentage = Math.round((respondedServers / totalServers) * 100);
-  const isPropagated = recordSets.size === 1 && respondedServers === totalServers;
-
+  
+  // Calculate propagation based on RESPONDING servers only
+  const percentage = Math.round((successfulQueries.length / respondingServers) * 100);
+  
+  // Check if all responding servers agree
+  const isPropagated = recordSets.size === 1 && noDataQueries.length === 0;
+  
   // Get all unique values
   const allUniqueValues = new Set();
   successfulQueries.forEach(result => {
     result.addresses.forEach(record => allUniqueValues.add(record));
   });
-
+  
+  // Build message
+  let message;
+  if (isPropagated) {
+    if (errorQueries.length > 0) {
+      message = `${recordType} records fully propagated (${errorQueries.length} server${errorQueries.length > 1 ? 's' : ''} did not respond)`;
+    } else {
+      message = `${recordType} records fully propagated globally`;
+    }
+  } else if (recordSets.size > 1) {
+    message = `${recordType} records inconsistent - multiple values detected`;
+  } else {
+    message = `${recordType} records propagation in progress (${percentage}% of responding servers)`;
+  }
+  
   return {
     isPropagated: isPropagated,
     percentage: percentage,
     totalServers: totalServers,
-    respondedServers: respondedServers,
+    respondedServers: respondingServers, // Only servers that responded (success + no_data)
+    errorCount: errorQueries.length, // Servers that timed out or errored
     uniqueValues: Array.from(allUniqueValues),
     uniqueRecordSets: Array.from(recordSets.entries()).map(([key, value]) => ({
       records: value.records,
       servers: value.servers
     })),
-    message: isPropagated 
-      ? `${recordType} records fully propagated globally` 
-      : `${recordType} records propagation in progress (${percentage}% of servers responding)`
+    message: message
   };
 } // End of analyzePropagationByType
 
