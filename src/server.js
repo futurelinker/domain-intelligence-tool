@@ -43,6 +43,10 @@ const apiLimiter = rateLimit({
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - CRITICAL for rate limiting behind Nginx/Cloudflare
+// This allows Express to see the real client IP from X-Forwarded-For header
+app.set('trust proxy', 1);
+
 // Parse JSON bodies
 app.use(express.json());
 
