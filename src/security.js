@@ -6,6 +6,39 @@ import net from 'net';
  * Provides SSRF protection, input validation, and utilities
  */
 
+
+// ============================================
+// DOMAIN CLEANING
+// ============================================
+
+/**
+ * Clean and normalize domain input
+ * Removes protocols, www, paths, ports, query strings, etc.
+ * @param {string} domain - Raw domain input
+ * @returns {string} - Cleaned domain
+ */
+export function cleanDomain(domain) {
+  if (!domain || typeof domain !== 'string') {
+    return '';
+  }
+
+  return domain
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\//, '')   // Remove http:// or https://
+    .replace(/^www\./, '')         // Remove www.
+    .replace(/:\d+/, '')           // Remove port (:8080)
+    .replace(/\/.*$/, '')          // Remove path and everything after /
+    .replace(/\?.*$/, '')          // Remove query string (?param=value)
+    .replace(/#.*$/, '')           // Remove hash/fragment (#section)
+    .replace(/\s+/g, '')           // Remove all whitespace
+    .replace(/^\.+|\.+$/g, '');    // Remove leading/trailing dots
+}
+
+// ============================================
+// INPUT VALIDATION
+// ============================================
+
 // ============================================
 // INPUT VALIDATION
 // ============================================
@@ -176,7 +209,7 @@ export async function validateDomainSSRF(domain) {
  * Apply this to endpoints that accept domain parameter
  */
 export async function validateDomainMiddleware(req, res, next) {
-  const { domain } = req.body;
+  let { domain } = req.body;
 
   // Check if domain exists
   if (!domain) {
@@ -184,6 +217,21 @@ export async function validateDomainMiddleware(req, res, next) {
       success: false,
       error: 'Domain is required',
       message: 'Please provide a domain name'
+    });
+  }
+
+  // Clean domain input (remove protocols, www, paths, etc.)
+  domain = cleanDomain(domain);
+  
+  // Update request body with cleaned domain
+  req.body.domain = domain;
+
+  // Check if cleaned domain is empty
+  if (!domain) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid domain format',
+      message: 'Please provide a valid domain name (e.g., example.com)'
     });
   }
 
